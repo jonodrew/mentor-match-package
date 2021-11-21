@@ -43,7 +43,7 @@ def _mark_participants_with_no_matches(matrix: List[List[Match]], role_as_str: s
         if all([match.disallowed for match in row]):
             row[0].__getattribute__(role_as_str).has_no_match = True
             logging.debug(
-                f"Participant {row[0].__getattribute__(role_as_str).data['Your Civil Service email address']} has no matches"
+                f"Participant {row[0].__getattribute__(role_as_str).email} has no matches"
             )
 
 
@@ -118,7 +118,7 @@ def create_mailing_list(
     file_name = f"{type(participant_list[0]).__name__.lower()}s-list.csv"
     file = output_folder.joinpath(file_name)
     list_participants_as_dicts = [
-        participant.to_dict() for participant in participant_list
+        participant.to_dict_for_output() for participant in participant_list
     ]
     field_headings = list_participants_as_dicts[0].keys()
     length_headings = len(field_headings)

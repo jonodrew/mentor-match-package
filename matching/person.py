@@ -17,10 +17,13 @@ GRADES = [
 
 class Person:
     def __init__(self, **kwargs):
-        self._grade: int = GRADES.index(kwargs["Your grade"])
-        self.department: str = kwargs["Your department or agency"]
-        self.profession: str = kwargs["Your profession"]
-        self.data: dict = kwargs
+        self._grade: int = GRADES.index(kwargs.get("Your grade", "AA"))
+        self.department: str = kwargs.get("Your department or agency", None)
+        self.profession: str = kwargs.get("Your profession", None)
+        self.email = kwargs.get("Your Civil Service email address", None)
+        self.first_name = kwargs.get("Your first name", None)
+        self.last_name = kwargs.get("Your last name", None)
+        self.role = kwargs.get("Your job title or role", None)
         self._connections: List[Person] = []
         self.has_no_match: bool = False
 
@@ -46,18 +49,34 @@ class Person:
         else:
             raise Exception
 
-    def to_dict(self, depth=1) -> dict:
-        output = {
-            "email": self.data.get("Your Civil Service email address"),
-            "first name": self.data.get("Your first name"),
-            "last name": self.data.get("Your last name"),
-            "role": self.data.get("Your job title or role"),
-            "department": self.department,
-            "grade": GRADES[self.grade],
-            "profession": self.profession,
-        }
-        if depth == 1:
-            for i, connection in enumerate(self.connections):
-                for key, value in connection.to_dict(depth=0).items():
-                    output[f"match {i+1} {key}"] = value
+    def to_dict(self) -> dict:
+        output = self.core_to_dict()
+        output["connections"] = [
+            connection.core_to_dict() for connection in self.connections
+        ]
         return output
+
+    def core_to_dict(self):
+        return {
+            self.__class__.__name__.lower(): {
+                "email": self.email,
+                "first name": self.first_name,
+                "last name": self.last_name,
+                "role": self.role,
+                "department": self.department,
+                "grade": GRADES[self.grade],
+                "profession": self.profession,
+            }
+        }
+
+    def to_dict_for_output(self, depth=1) -> dict:
+        output = self.core_to_dict()[self.__class__.__name__.lower()]
+        if depth == 1:
+            for i, connection in enumerate(self._connections):
+                for key, value in connection.to_dict_for_output(depth=0).items():
+                    output[f"match {i + 1} {key}"] = value
+        return output
+
+    def __eq__(self, other):
+        if type(other) == type(self):
+            return other.to_dict() == self.to_dict()
