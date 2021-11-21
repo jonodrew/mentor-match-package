@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 class Mentee(Person):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(Mentee, self).__init__(**kwargs)
 
     @property
     def mentors(self):

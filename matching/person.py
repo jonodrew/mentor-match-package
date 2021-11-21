@@ -36,7 +36,7 @@ class Person:
             raise NotImplementedError
 
     @property
-    def connections(self):
+    def connections(self) -> List["Person"]:
         return self._connections
 
     @connections.setter

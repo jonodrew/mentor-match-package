@@ -7,11 +7,11 @@ if TYPE_CHECKING:
 
 class Mentor(Person):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(Mentor, self).__init__(**kwargs)
 
     @property
     def mentees(self):
-        return super().connections
+        return super(Mentor, self).connections
 
     @mentees.setter
     def mentees(self, new_mentee: "Mentee"):
