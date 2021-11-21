@@ -2,6 +2,7 @@ import csv
 import logging
 import os
 import sys
+from functools import reduce
 from pathlib import Path
 from typing import Union, Type, List, Dict, Tuple, Generator, Optional
 
@@ -30,7 +31,7 @@ def process_form(path_to_form) -> Generator[Dict[str, str], None, None]:
             yield row
 
 
-def create_participant_list(
+def create_participant_list_from_path(
     participant: Union[Type[Mentee], Type[Mentor]], path_to_data
 ):
     path_to_data = path_to_data / f"{participant.__name__.lower()}s.csv"
@@ -82,48 +83,33 @@ def calculate_matches(prepared_matrix: Matrix):
 
 
 def match_and_assign_participants(
-        mentor_list: List[Mentor],
-        mentee_list: List[Mentee],
+    participant_lists: Tuple[List[Mentor], List[Mentee]],
     weightings: Union[Dict[str, int], None] = None,
-):
-    matches = create_matches(mentor_list, mentee_list, weightings)
+) -> Tuple[List[Mentor], List[Mentee]]:
+    matches = create_matches(participant_lists[0], participant_lists[1], weightings)
     for successful_match in calculate_matches(prepare_matrix(matches)):
         match = matches[successful_match[0]][successful_match[1]]
         match.mark_successful()
+    return participant_lists[0], participant_lists[1]
 
 
-def round_one_matching(path_to_data) -> Tuple[List[Mentor], List[Mentee]]:
-    mentors = create_participant_list(Mentor, path_to_data)
-    mentees = create_participant_list(Mentee, path_to_data)
-    match_and_assign_participants(mentors, mentees)
-    return mentors, mentees
-
-
-def round_two_matching(
-    round_one_mentor_list: List[Mentor], round_one_mentee_list: List[Mentee]
+def process_data(
+    mentors: List[Mentor], mentees: List[Mentee]
 ) -> Tuple[List[Mentor], List[Mentee]]:
-    logging.debug("Round two!")
-    match_and_assign_participants(
-        round_one_mentor_list,
-        round_one_mentee_list,
-        weightings={"profession": 4, "grade": 3, "unmatched bonus": 50},
+    return reduce(
+        function=match_and_assign_participants,
+        initial=(mentors, mentees),
+        sequence=[
+            {"profession": 4, "grade": 3, "unmatched bonus": 50},
+            {"profession": 0, "grade": 3, "unmatched bonus": 100},
+        ],
     )
-    return round_one_mentor_list, round_one_mentee_list
 
 
-def round_three_matching(
-    round_two_mentor_list: List[Mentor], round_two_mentee_list: List[Mentee]
-) -> Tuple[List[Mentor], List[Mentee]]:
-    match_and_assign_participants(
-        round_two_mentor_list,
-        round_two_mentee_list,
-        weightings={"profession": 0, "grade": 3, "unmatched bonus": 100},
-    )
-    return round_two_mentor_list, round_two_mentee_list
-
-
-def conduct_matching(path_to_data):
-    return round_three_matching(*round_two_matching(*round_one_matching(path_to_data)))
+def conduct_matching_from_file(path_to_data) -> Tuple[List[Mentor], List[Mentee]]:
+    mentors = create_participant_list_from_path(Mentor, path_to_data)
+    mentees = create_participant_list_from_path(Mentee, path_to_data)
+    return process_data(mentors, mentees)
 
 
 def create_mailing_list(

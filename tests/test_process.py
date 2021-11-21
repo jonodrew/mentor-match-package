@@ -11,10 +11,10 @@ import pytest
 from matching.mentor import Mentor
 from matching.person import Person
 from matching.process import (
-    create_participant_list,
+    create_participant_list_from_path,
     Mentee,
     create_matches,
-    conduct_matching,
+    conduct_matching_from_file,
     create_mailing_list,
 )
 
@@ -67,7 +67,7 @@ def test_data_path(tmpdir_factory):
 class TestProcess:
     def test_create_mentee_list(self, known_file, test_data_path):
         known_file(test_data_path, "mentee", 50)
-        mentees = create_participant_list(Mentee, test_data_path)
+        mentees = create_participant_list_from_path(Mentee, test_data_path)
         assert len(mentees) == 50
         assert all(map(lambda role: type(role) is Mentee, mentees))
 
@@ -75,16 +75,16 @@ class TestProcess:
         known_file(test_data_path, "mentee", 50)
         known_file(test_data_path, "mentor", 50)
         matches = create_matches(
-            create_participant_list(Mentor, test_data_path),
-            create_participant_list(Mentee, test_data_path),
+            create_participant_list_from_path(Mentor, test_data_path),
+            create_participant_list_from_path(Mentee, test_data_path),
         )
         assert len(matches) == 50
         assert len(matches[0]) == 50
 
-    def test_conduct_matching(self, known_file, test_data_path):
+    def test_conduct_matching_from_file(self, known_file, test_data_path):
         known_file(test_data_path, "mentee", 50)
         known_file(test_data_path, "mentor", 50)
-        mentors, mentees = conduct_matching(test_data_path)
+        mentors, mentees = conduct_matching_from_file(test_data_path)
         assert len(mentors) == 50
         assert len(mentees) == 50
         for mentor in mentors:
@@ -95,7 +95,7 @@ class TestProcess:
     def test_conduct_matching_with_unbalanced_inputs(self, test_data_path, known_file):
         known_file(test_data_path, "mentee", 50)
         known_file(test_data_path, "mentor", 35)
-        mentors, mentees = conduct_matching(test_data_path)
+        mentors, mentees = conduct_matching_from_file(test_data_path)
         every_mentee_has_a_mentor = list(
             map(lambda mentee: len(mentee.mentors) > 0, mentees)
         )
@@ -117,7 +117,7 @@ class TestProcess:
                 ]
             )
 
-        mentors, mentees = conduct_matching(
+        mentors, mentees = conduct_matching_from_file(
             pathlib.Path(".").absolute() / "integration"
         )
         every_mentee_has_a_mentor = list(
