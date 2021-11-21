@@ -97,12 +97,12 @@ def process_data(
     mentors: List[Mentor], mentees: List[Mentee]
 ) -> Tuple[List[Mentor], List[Mentee]]:
     return reduce(
-        function=match_and_assign_participants,
-        initial=(mentors, mentees),
-        sequence=[
+        match_and_assign_participants,
+        [
             {"profession": 4, "grade": 3, "unmatched bonus": 50},
             {"profession": 0, "grade": 3, "unmatched bonus": 100},
         ],
+        (mentors, mentees),
     )
 
 
