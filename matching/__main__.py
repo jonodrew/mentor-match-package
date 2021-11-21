@@ -2,7 +2,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from matching.process import conduct_matching, create_mailing_list
+from matching.process import conduct_matching_from_file, create_mailing_list
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     )
     path_to_data = Path(parser.parse_args().filepath)
     logging.info("Beginning matching exercise. This might take up to five minutes.")
-    mentors, mentees = conduct_matching(path_to_data)
+    mentors, mentees = conduct_matching_from_file(path_to_data)
     logging.info("Matches found. Exporting to output folder!")
     out_put_folder = path_to_data / "output"
     create_mailing_list(mentors, out_put_folder)
