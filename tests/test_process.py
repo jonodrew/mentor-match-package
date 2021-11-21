@@ -1,9 +1,7 @@
 import csv
 import logging
-import math
 import os
 import pathlib
-from datetime import datetime
 from typing import List
 
 import pytest
@@ -17,51 +15,6 @@ from matching.process import (
     conduct_matching_from_file,
     create_mailing_list,
 )
-
-
-@pytest.fixture
-def known_file(base_data):
-    def known_file(path_to_file, role_type: str, quantity=50):
-        padding_size = int(math.log10(quantity)) + 1
-        data_path = path_to_file / f"{role_type}s.csv"
-        with open(data_path, "w", newline="") as test_data:
-            headings = [
-                "Timestamp",
-                f"Do you want to sign up as a {role_type}?",
-                "Do you agree to us using the information you provide to us in this way?",
-                "Your first name",
-                "Your last name",
-                "Your Civil Service email address",
-                "Your job title or role",
-                "Your department or agency",
-                "Your grade",
-                "Your profession",
-            ]
-            data = [headings]
-            for i in range(quantity):
-                data.append(
-                    [
-                        str(datetime.now()),
-                        "yes",
-                        "yes",
-                        role_type,
-                        str(i).zfill(padding_size),
-                        f"{role_type}.{str(i).zfill(padding_size)}@gov.uk",
-                        "Some role",
-                        f"Department of {role_type.capitalize()}s",
-                        "EO" if role_type == "mentor" else "AA",
-                        "Participant",
-                    ]
-                )
-            file_writer = csv.writer(test_data)
-            file_writer.writerows(data)
-
-    return known_file
-
-
-@pytest.fixture(scope="session")
-def test_data_path(tmpdir_factory):
-    return tmpdir_factory.mktemp("data")
 
 
 class TestProcess:
