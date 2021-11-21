@@ -7,7 +7,6 @@ from typing import Union, Type, List, Dict, Tuple, Generator, Optional
 
 from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 
-from matching.helpers.pre_processing import transpose_matrix
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
@@ -73,14 +72,18 @@ def prepare_matrix(matches: List[List[Match]]) -> Matrix:
     return prepared_matrix
 
 
+def transpose_matrix(matrix):
+    return [list(row) for row in zip(*matrix)]
+
+
 def calculate_matches(prepared_matrix: Matrix):
     algorithm = Munkres()
     return algorithm.compute(prepared_matrix)
 
 
 def match_and_assign_participants(
-    mentor_list: List[Mentor],
-    mentee_list: List[Mentee],
+        mentor_list: List[Mentor],
+        mentee_list: List[Mentee],
     weightings: Union[Dict[str, int], None] = None,
 ):
     matches = create_matches(mentor_list, mentee_list, weightings)
