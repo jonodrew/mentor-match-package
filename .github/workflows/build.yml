@@ -1,16 +1,21 @@
 name: Build and publish package
 on:
+  workflow_run:
+    workflows: ["Test"]
+    branches: [main]
+    types:
+      - completed
   push:
     tags:
       - "*.*.*"
 jobs:
   Build-package:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - run: pip install -r requirements.txt
-      - run: pytest
       - name: Build package
         run: make package
       - name: Publish to PyPI
