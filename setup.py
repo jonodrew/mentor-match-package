@@ -26,4 +26,5 @@ setup(
     packages=["matching"],
     include_package_data=True,
     install_requires=["munkres"],
+    setup_requires=["wheel"],
 )
