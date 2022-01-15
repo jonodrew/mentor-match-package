@@ -99,6 +99,7 @@ def process_data(
     return reduce(
         match_and_assign_participants,
         [
+            None,
             {"profession": 4, "grade": 3, "unmatched bonus": 50},
             {"profession": 0, "grade": 3, "unmatched bonus": 100},
         ],
