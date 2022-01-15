@@ -6,7 +6,7 @@ It uses [this implementation of Munkres](https://github.com/bmc/munkres) to find
 
 ## Scoring
 
-Full details of how the matches are calculated can be read in the code itself. Customisable configurations are on the 
+Full details of how the matches are calculated can be read in the code itself. Customisable configurations are on the
 roadmap but are not planned for any upcoming releases.
 
 ## Installation
@@ -15,10 +15,10 @@ You can install this project with `python -m pip install mentor-match`
 
 ## Use
 
-To use this library, first install it (see above). You may need to munge your data for the system to be happy with it. 
+To use this library, first install it (see above). You may need to munge your data for the system to be happy with it.
 Use the attached CSV files as guides for your mentor and mentee data, then put them together in the same folder.
 
-Here is a snippet that outlines a minimal use:
+Here is a snippet that outlines a minimal use in a Python project:
 
 ```python
 from matching import process
@@ -30,5 +30,11 @@ output_folder = data_folder / "output"
 process.create_mailing_list(mentors, output_folder)
 process.create_mailing_list(mentees, output_folder)
 ```
-This creates a mailing list according to a set template, ready for processing by your favourite/enterprise mandated 
+This creates a mailing list according to a set template, ready for processing by your favourite/enterprise mandated
 email solution
+
+Alternatively, you can run this software from the command line as follows
+
+```commandline
+python -m matching /path/to/participant/data
+```
