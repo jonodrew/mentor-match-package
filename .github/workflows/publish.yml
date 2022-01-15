@@ -1,9 +1,0 @@
-name: Publish package
-on:
-  push:
-    tags:
-      - "*.*.*"
-uses: pypa/gh-action-pypi-publish@release/v1
-with:
-  user: "github"
-  password: ${{ secrets.PYPI_API_TOKEN }}
