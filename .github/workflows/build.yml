@@ -12,7 +12,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest
       - name: Build package
-      - run: make package
+        run: make package
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
