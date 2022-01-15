@@ -24,10 +24,11 @@ class TestMatch:
 
         match = Match(base_mentor, base_mentee)
         match.calculate_match()
-        if GRADES.index(mentor_grade) - GRADES.index(mentee_grade) <= 2:
-            pass
-        else:
+        grade_diff = base_mentor.grade - base_mentee.grade
+        if not (2 >= grade_diff > 0):
             assert match.disallowed
+        else:
+            assert not match.disallowed
 
     def test_matching_profession_scores_four_points(self, base_mentor, base_mentee):
         base_mentor.grade = "Grade 6"  # 1 grade diff
