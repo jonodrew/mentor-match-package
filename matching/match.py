@@ -57,6 +57,10 @@ class Match:
             scoring_method()
 
     def score_grade(self) -> None:
+        """
+        If the grade difference is 1 or 2, it's multiplied by the grade weighting and added to the score.
+        Otherwise, the match is disallowed.
+        """
         grade_diff = self.mentor.grade - self.mentee.grade
         if not (2 >= grade_diff > 0):
             self._disallowed = True
@@ -64,6 +68,10 @@ class Match:
             self._score += grade_diff * self.weightings["grade"]
 
     def score_profession(self) -> None:
+        """
+        If the mentor and mentee are in the same profession, the score is increased by the 'profession' value in the
+        weightings dict
+        """
         if self.mentee.profession == self.mentor.profession:
             self._score += self.weightings["profession"]
 
@@ -78,6 +86,10 @@ class Match:
             self._disallowed = True
 
     def score_unmatched(self) -> None:
+        """
+        If either the mentor or the mentee in this match has no other matches, increase the score by the unmatched
+        bonus in the weightings dict
+        """
         if any(
             map(
                 lambda participant: len(participant.connections) == 0,
