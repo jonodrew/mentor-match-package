@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, List
 
 if TYPE_CHECKING:
     from matching.mentor import Mentor
@@ -45,7 +45,7 @@ class Match:
         point the match becomes disallowed, the loop breaks. Note that if the match is disallowed, the score property
         always returns 0.
         """
-        scoring_methods = [
+        scoring_methods: List[Callable[[], None]] = [
             self.check_not_already_matched,
             self.score_department,
             self.score_grade,
