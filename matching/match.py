@@ -40,6 +40,11 @@ class Match:
             self._disallowed = new_value
 
     def calculate_match(self) -> None:
+        """
+        This method calculates the score for this Match object. It does this by applying the functions below. If at any
+        point the match becomes disallowed, the loop breaks. Note that if the match is disallowed, the score property
+        always returns 0.
+        """
         scoring_methods = [
             self.check_not_already_matched,
             self.score_department,
@@ -62,8 +67,14 @@ class Match:
         if self.mentee.profession == self.mentor.profession:
             self._score += self.weightings["profession"]
 
-    def score_department(self) -> None:
-        if self.mentee.department == self.mentor.department:
+    def score_department(self, same_department_permitted: bool = False) -> None:
+        """
+        Mentor/mentee matches in the same department default to disallowed
+        """
+        if (
+            self.mentee.department == self.mentor.department
+            and not same_department_permitted
+        ):
             self._disallowed = True
 
     def score_unmatched(self) -> None:
@@ -83,5 +94,8 @@ class Match:
             logging.debug("Skipping this match as disallowed")
 
     def check_not_already_matched(self):
+        """
+        Mentees/mentors can't be matched if they've already been matched
+        """
         if self.mentee in self.mentor.mentees or self.mentor in self.mentee.mentors:
             self._disallowed = True
