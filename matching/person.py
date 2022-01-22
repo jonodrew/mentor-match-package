@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Union
 
 GRADES = [
     "AA",
@@ -49,14 +49,16 @@ class Person:
         else:
             raise Exception
 
-    def to_dict(self) -> dict:
+    def to_dict(
+        self,
+    ) -> Dict[str, Dict[str, Union[str, List[Dict[str, Dict[str, str]]]]]]:
         output = self.core_to_dict()
-        output["connections"] = [
+        output[self.__class__.__name__.lower()]["connections"] = [
             connection.core_to_dict() for connection in self.connections
         ]
         return output
 
-    def core_to_dict(self):
+    def core_to_dict(self) -> Dict[str, Dict[str, Union[str, List]]]:
         return {
             self.__class__.__name__.lower(): {
                 "email": self.email,
