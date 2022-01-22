@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import pathlib
 import sys
 from functools import reduce
 from pathlib import Path
@@ -32,7 +33,7 @@ def process_form(path_to_form) -> Generator[Dict[str, str], None, None]:
 
 
 def create_participant_list_from_path(
-    participant: Union[Type[Mentee], Type[Mentor]], path_to_data
+    participant: Union[Type[Mentee], Type[Mentor]], path_to_data: pathlib.Path
 ):
     path_to_data = path_to_data / f"{participant.__name__.lower()}s.csv"
     return [participant(**row) for row in process_form(path_to_data)]
@@ -43,7 +44,8 @@ def _mark_participants_with_no_matches(matrix: List[List[Match]], role_as_str: s
         if all([match.disallowed for match in row]):
             row[0].__getattribute__(role_as_str).has_no_match = True
             logging.debug(
-                f"Participant {row[0].__getattribute__(role_as_str).email} has no matches"
+                f"Participant {row[0].__getattribute__(role_as_str).email} has no"
+                " matches"
             )
 
 
@@ -116,6 +118,11 @@ def conduct_matching_from_file(path_to_data) -> Tuple[List[Mentor], List[Mentee]
 def create_mailing_list(
     participant_list: List[Union[Mentor, Mentee]], output_folder: Path
 ):
+    """
+    This function takes a list of either matched mentors or matched mentees. For each participant, it outputs their
+    data and the information of the participants they've been matched with. If a particpant doesn't have the full
+    compliment of three matches, the empty spaces are ignored.
+    """
     file_name = f"{type(participant_list[0]).__name__.lower()}s-list.csv"
     file = output_folder.joinpath(file_name)
     list_participants_as_dicts = [
@@ -131,7 +138,9 @@ def create_mailing_list(
     except FileExistsError:
         pass
     with open(file, "w", newline="") as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=list(field_headings))
+        writer = csv.DictWriter(
+            output_file, fieldnames=list(field_headings), extrasaction="ignore"
+        )
         writer.writeheader()
         for participant in list_participants_as_dicts:
             writer.writerow(participant)
