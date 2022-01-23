@@ -128,19 +128,15 @@ def create_mailing_list(
     list_participants_as_dicts = [
         participant.to_dict_for_output() for participant in participant_list
     ]
-    field_headings = list_participants_as_dicts[0].keys()
-    length_headings = len(field_headings)
-    for participant in list_participants_as_dicts:
-        if len(participant.keys()) > length_headings:
-            field_headings = participant.keys()
+    field_headings = max(
+        list_participants_as_dicts, key=lambda participant: len(participant.keys())
+    ).keys()
     try:
         os.mkdir(output_folder)
     except FileExistsError:
         pass
     with open(file, "w", newline="") as output_file:
-        writer = csv.DictWriter(
-            output_file, fieldnames=list(field_headings), extrasaction="ignore"
-        )
+        writer = csv.DictWriter(output_file, fieldnames=list(field_headings))
         writer.writeheader()
         for participant in list_participants_as_dicts:
             writer.writerow(participant)

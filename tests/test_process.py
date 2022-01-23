@@ -62,3 +62,15 @@ class TestProcess:
             assert {"match 1 email", "match 2 email", "match 3 email"}.issubset(
                 set(next(file_reader))
             )
+
+    def test_create_mailing_list_when_mentor_has_no_matches(
+        self, base_mentor, base_mentee, tmp_path
+    ):
+        mentors = [base_mentor, base_mentor]
+        mentors[0].mentees.extend([base_mentee for _ in range(3)])
+        create_mailing_list(mentors, tmp_path)
+        with open(tmp_path.joinpath("mentors-list.csv"), "r") as test_mentors_file:
+            file_reader = csv.reader(test_mentors_file)
+            assert {"match 1 email", "match 2 email", "match 3 email"}.issubset(
+                set(next(file_reader))
+            )
