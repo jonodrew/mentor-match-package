@@ -51,7 +51,7 @@ class TestProcess:
         )
         assert all(every_mentee_has_a_mentor)
 
-    def test_create_mailing_list(self, tmp_path, base_mentee, base_mentor, base_data):
+    def test_create_mailing_list(self, tmp_path, base_mentee, base_mentor):
         mentors = [base_mentor]
         for mentor in mentors:
             mentor.mentees.extend([base_mentee for _ in range(3)])

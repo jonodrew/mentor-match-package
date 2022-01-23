@@ -109,7 +109,7 @@ def process_data(
     )
 
 
-def conduct_matching_from_file(path_to_data) -> Tuple[List[Mentor], List[Mentee]]:
+def conduct_matching_from_file(path_to_data: Path) -> Tuple[List[Mentor], List[Mentee]]:
     mentors = create_participant_list_from_path(Mentor, path_to_data)
     mentees = create_participant_list_from_path(Mentee, path_to_data)
     return process_data(mentors, mentees)
