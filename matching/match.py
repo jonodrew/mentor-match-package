@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Callable, List
+from typing import TYPE_CHECKING, Callable, List, Dict
 
 if TYPE_CHECKING:
     from matching.mentor import Mentor
@@ -7,12 +7,8 @@ if TYPE_CHECKING:
 
 
 class Match:
-    def __init__(self, mentor: "Mentor", mentee: "Mentee", weightings=None):
-        self.weightings = (
-            {"profession": 4, "grade": 3, "unmatched bonus": 0}
-            if weightings is None
-            else weightings
-        )
+    def __init__(self, mentor: "Mentor", mentee: "Mentee", weightings: Dict[str, int]):
+        self.weightings = weightings
         self.mentee = mentee
         self.mentor = mentor
         self._disallowed: bool = False
@@ -96,7 +92,7 @@ class Match:
                 (self.mentee, self.mentor),
             )
         ):
-            self._score += self.weightings.get("unmatched bonus")
+            self._score += self.weightings.get("unmatched bonus", 0)
 
     def mark_successful(self):
         if not self.disallowed:

@@ -1,3 +1,5 @@
+import functools
+
 from matching.match import Match
 from matching.mentor import Mentor
 from matching.mentee import Mentee
@@ -6,11 +8,15 @@ import pytest
 
 
 class TestMatch:
+    new_match = functools.partial(
+        Match, weightings={"profession": 4, "grade": 3, "unmatched bonus": 0}
+    )
+
     def test_cant_match_with_same_department(
         self, base_mentee: Mentee, base_mentor: Mentor
     ):
         base_mentee.department = base_mentor.department = "Department of Fun"
-        match = Match(base_mentor, base_mentee)
+        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
         match.calculate_match()
         assert match.disallowed
 
@@ -22,7 +28,7 @@ class TestMatch:
         base_mentee.grade = mentee_grade
         base_mentor.grade = mentor_grade
 
-        match = Match(base_mentor, base_mentee)
+        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
         match.calculate_match()
         grade_diff = base_mentor.grade - base_mentee.grade
         if not (2 >= grade_diff > 0):
@@ -33,18 +39,18 @@ class TestMatch:
     def test_matching_profession_scores_four_points(self, base_mentor, base_mentee):
         base_mentor.grade = "Grade 6"  # 1 grade diff
         base_mentor.department = "Department of Sad"
-        match = Match(base_mentor, base_mentee)
+        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
         assert match.score - match.weightings["grade"] == 4
 
     def test_mark_successful(self, base_mentee, base_mentor):
-        match = Match(base_mentor, base_mentee)
+        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
         match.mark_successful()
         assert base_mentor in base_mentee.mentors
         assert base_mentee in base_mentor.mentees
 
     def test_cant_match_with_self(self, base_mentee, base_data):
         mentor = Mentor(**base_data)
-        match = Match(mentor, base_mentee)
+        match = TestMatch.new_match(mentor=mentor, mentee=base_mentee)
         match.calculate_match()
         assert match.disallowed
 
@@ -52,6 +58,6 @@ class TestMatch:
         self, base_mentee, base_mentor
     ):
         base_mentor.mentees.append(base_mentee)
-        test_match = Match(base_mentor, base_mentee)
+        test_match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
         test_match.calculate_match()
         assert test_match.disallowed

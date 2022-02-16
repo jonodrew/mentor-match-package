@@ -24,6 +24,7 @@ class TestProcess:
         matches = create_matches(
             create_participant_list_from_path(Mentor, test_data_path),
             create_participant_list_from_path(Mentee, test_data_path),
+            {"profession": 4, "grade": 3, "unmatched bonus": 0},
         )
         assert len(matches) == 50
         assert len(matches[0]) == 50
