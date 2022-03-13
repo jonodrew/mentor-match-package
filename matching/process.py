@@ -113,23 +113,21 @@ def match_and_assign_participants(
 
 
 def process_data(
-    mentors: List[Mentor], mentees: List[Mentee]
+    mentors: List[Mentor], mentees: List[Mentee], weightings_list: List[Dict[str, int]]
 ) -> Tuple[List[Mentor], List[Mentee]]:
     return reduce(
         match_and_assign_participants,
-        [
-            {"profession": 4, "grade": 3, "unmatched bonus": 0},
-            {"profession": 4, "grade": 3, "unmatched bonus": 50},
-            {"profession": 0, "grade": 3, "unmatched bonus": 100},
-        ],
+        weightings_list,
         (mentors, mentees),
     )
 
 
-def conduct_matching_from_file(path_to_data: Path) -> Tuple[List[Mentor], List[Mentee]]:
+def conduct_matching_from_file(
+    path_to_data: Path, weightings_list: [List[Dict[str, int]]]
+) -> Tuple[List[Mentor], List[Mentee]]:
     mentors = create_participant_list_from_path(Mentor, path_to_data)
     mentees = create_participant_list_from_path(Mentee, path_to_data)
-    return process_data(mentors, mentees)
+    return process_data(mentors, mentees, weightings_list)
 
 
 def create_mailing_list(

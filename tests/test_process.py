@@ -32,7 +32,14 @@ class TestProcess:
     def test_conduct_matching_from_file(self, known_file, test_data_path):
         known_file(test_data_path, "mentee", 50)
         known_file(test_data_path, "mentor", 50)
-        mentors, mentees = conduct_matching_from_file(test_data_path)
+        mentors, mentees = conduct_matching_from_file(
+            test_data_path,
+            [
+                {"profession": 4, "grade": 3, "unmatched bonus": 0},
+                {"profession": 4, "grade": 3, "unmatched bonus": 50},
+                {"profession": 0, "grade": 3, "unmatched bonus": 100},
+            ],
+        )
         assert len(mentors) == 50
         assert len(mentees) == 50
         for mentor in mentors:
@@ -43,7 +50,14 @@ class TestProcess:
     def test_conduct_matching_with_unbalanced_inputs(self, test_data_path, known_file):
         known_file(test_data_path, "mentee", 50)
         known_file(test_data_path, "mentor", 35)
-        mentors, mentees = conduct_matching_from_file(test_data_path)
+        mentors, mentees = conduct_matching_from_file(
+            test_data_path,
+            [
+                {"profession": 4, "grade": 3, "unmatched bonus": 0},
+                {"profession": 4, "grade": 3, "unmatched bonus": 50},
+                {"profession": 0, "grade": 3, "unmatched bonus": 100},
+            ],
+        )
         every_mentee_has_a_mentor = list(
             map(lambda mentee: len(mentee.mentors) > 0, mentees)
         )
