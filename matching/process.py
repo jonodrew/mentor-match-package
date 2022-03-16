@@ -4,22 +4,27 @@ import os
 import pathlib
 import sys
 from pathlib import Path
-from typing import Union, Type, List, Dict, Tuple, Generator
+from typing import Union, Type, List, Dict, Tuple, Generator, Optional
 
 from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
+from matching.rule import Rule
 
 
 def generate_match_matrix(
     mentor_list: List[Mentor],
     mentee_list: List[Mentee],
     weightings: Dict[str, int],
+    rules: Optional[List[Rule]] = None,
 ) -> List[List[Match]]:
     return [
-        [Match(mentor, mentee, weightings).calculate_match() for mentee in mentee_list]
+        [
+            Match(mentor, mentee, weightings, rules).calculate_match()
+            for mentee in mentee_list
+        ]
         for mentor in mentor_list
     ]
 
@@ -84,18 +89,24 @@ def match_and_assign_participants(
 
 
 def process_data(
-    mentors: List[Mentor], mentees: List[Mentee], weightings_list: List[Dict[str, int]]
+    mentors: List[Mentor],
+    mentees: List[Mentee],
+    weightings_list: List[Dict[str, int]],
+    rules: Optional[List[List[Rule]]] = None,
 ) -> Tuple[List[Mentor], List[Mentee]]:
     """
     This is the main entrypoint for this software. It lazily generates three matrices, which allows for them to be
     mutated over the course of the matching process.
+    :param rules:
     :param mentors:
     :param mentees:
     :param weightings_list:
     :return:
     """
     matrices = map(
-        functools.partial(generate_match_matrix, mentors, mentees), weightings_list
+        functools.partial(generate_match_matrix, mentors, mentees),
+        weightings_list,
+        rules,
     )
     for matrix in matrices:
         match_and_assign_participants(matrix)

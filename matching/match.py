@@ -1,5 +1,7 @@
 import logging
-from typing import TYPE_CHECKING, Callable, List, Dict
+from typing import TYPE_CHECKING, Callable, List, Dict, Optional
+
+from matching.rule import Rule
 
 if TYPE_CHECKING:
     from matching.mentor import Mentor
@@ -7,12 +9,19 @@ if TYPE_CHECKING:
 
 
 class Match:
-    def __init__(self, mentor: "Mentor", mentee: "Mentee", weightings: Dict[str, int]):
+    def __init__(
+        self,
+        mentor: "Mentor",
+        mentee: "Mentee",
+        weightings: Dict[str, int],
+        rules: Optional[List[Rule]] = None,
+    ):
         self.weightings = weightings
         self.mentee = mentee
         self.mentor = mentor
         self._disallowed: bool = False
         self._score: int = 0
+        self.rules = rules
 
     @property
     def score(self):
