@@ -1,9 +1,8 @@
 import csv
-import logging
+import functools
 import os
 import pathlib
 import sys
-from functools import reduce
 from pathlib import Path
 from typing import Union, Type, List, Dict, Tuple, Generator
 
@@ -39,49 +38,27 @@ def create_participant_list_from_path(
     return [participant(**row) for row in process_form(path_to_data)]
 
 
-def _mark_participants_with_no_matches(
-    matrix: List[List[Match]], role_as_str: str
-) -> None:
-    """
-    This method goes through every row in the matrix. If the row has no possible matches, then the mentor/mentee in
-    that row is marked as `has_no_match`
-    :param matrix:
-    :param role_as_str:
-    :return: None
-    """
-    for row in matrix:
-        if all([match.disallowed for match in row]):
-            row[0].__getattribute__(role_as_str).has_no_match = True
-            logging.debug(
-                f"Participant {row[0].__getattribute__(role_as_str).email} has no"
-                " matches"
-            )
+def transpose_matrix(matrix):
+    return [list(row) for row in zip(*matrix)]
 
 
 def create_matches(
-    mentor_list: List[Mentor],
-    mentee_list: List[Mentee],
-    weightings: Dict[str, int],
+    preliminary_matches: List[List[Match]],
 ) -> List[List[Match]]:
     """
     Create a preliminary grid of matches and then strip out folks who have zero potential matches.
-    :param mentor_list:
-    :param mentee_list:
-    :param weightings:
+    :param: preliminary_matches:
     :return:
     """
 
-    def _can_match(participant: Union[Mentor, Mentee]):
-        return not participant.has_no_match
+    def _at_least_one_match(row: List[Match]) -> bool:
+        return not all(match.disallowed for match in row)
 
-    preliminary_matches = generate_match_matrix(mentor_list, mentee_list, weightings)
-    _mark_participants_with_no_matches(preliminary_matches, "mentor")
-    _mark_participants_with_no_matches(transpose_matrix(preliminary_matches), "mentee")
-    return generate_match_matrix(
-        list(filter(_can_match, mentor_list)),
-        list(filter(_can_match, mentee_list)),
-        weightings,
-    )
+    good_mentees = [row for row in preliminary_matches if _at_least_one_match(row)]
+    good_mentors = [
+        row for row in transpose_matrix(good_mentees) if _at_least_one_match(row)
+    ]
+    return transpose_matrix(good_mentors)
 
 
 def prepare_matrix(matches: List[List[Match]]) -> Matrix:
@@ -92,34 +69,37 @@ def prepare_matrix(matches: List[List[Match]]) -> Matrix:
     return prepared_matrix
 
 
-def transpose_matrix(matrix):
-    return [list(row) for row in zip(*matrix)]
-
-
 def calculate_matches(prepared_matrix: Matrix):
     algorithm = Munkres()
     return algorithm.compute(prepared_matrix)
 
 
 def match_and_assign_participants(
-    participant_lists: Tuple[List[Mentor], List[Mentee]],
-    weightings: Dict[str, int],
-) -> Tuple[List[Mentor], List[Mentee]]:
-    matches = create_matches(participant_lists[0], participant_lists[1], weightings)
-    for successful_match in calculate_matches(prepare_matrix(matches)):
-        match = matches[successful_match[0]][successful_match[1]]
+    good_matches: List[List[Match]],
+) -> List[List[Match]]:
+    for successful_match in calculate_matches(prepare_matrix(good_matches)):
+        match = good_matches[successful_match[0]][successful_match[1]]
         match.mark_successful()
-    return participant_lists[0], participant_lists[1]
+    return good_matches
 
 
 def process_data(
     mentors: List[Mentor], mentees: List[Mentee], weightings_list: List[Dict[str, int]]
 ) -> Tuple[List[Mentor], List[Mentee]]:
-    return reduce(
-        match_and_assign_participants,
-        weightings_list,
-        (mentors, mentees),
+    """
+    This is the main entrypoint for this software. It lazily generates three matrices, which allows for them to be
+    mutated over the course of the matching process.
+    :param mentors:
+    :param mentees:
+    :param weightings_list:
+    :return:
+    """
+    matrices = map(
+        functools.partial(generate_match_matrix, mentors, mentees), weightings_list
     )
+    for matrix in matrices:
+        match_and_assign_participants(matrix)
+    return mentors, mentees
 
 
 def conduct_matching_from_file(

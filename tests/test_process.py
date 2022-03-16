@@ -8,6 +8,7 @@ from matching.process import (
     create_matches,
     conduct_matching_from_file,
     create_mailing_list,
+    generate_match_matrix,
 )
 
 
@@ -22,9 +23,11 @@ class TestProcess:
         known_file(test_data_path, "mentee", 50)
         known_file(test_data_path, "mentor", 50)
         matches = create_matches(
-            create_participant_list_from_path(Mentor, test_data_path),
-            create_participant_list_from_path(Mentee, test_data_path),
-            {"profession": 4, "grade": 3, "unmatched bonus": 0},
+            generate_match_matrix(
+                create_participant_list_from_path(Mentor, test_data_path),
+                create_participant_list_from_path(Mentee, test_data_path),
+                {"profession": 4, "grade": 3, "unmatched bonus": 0},
+            )
         )
         assert len(matches) == 50
         assert len(matches[0]) == 50
