@@ -20,7 +20,7 @@ def generate_match_matrix(
     weightings: Dict[str, int],
 ) -> List[List[Match]]:
     return [
-        [Match(mentor, mentee, weightings) for mentee in mentee_list]
+        [Match(mentor, mentee, weightings).calculate_match() for mentee in mentee_list]
         for mentor in mentor_list
     ]
 

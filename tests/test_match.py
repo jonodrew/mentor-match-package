@@ -39,7 +39,9 @@ class TestMatch:
     def test_matching_profession_scores_four_points(self, base_mentor, base_mentee):
         base_mentor.grade = "Grade 6"  # 1 grade diff
         base_mentor.department = "Department of Sad"
-        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
+        match = TestMatch.new_match(
+            mentor=base_mentor, mentee=base_mentee
+        ).calculate_match()
         assert match.score - match.weightings["grade"] == 4
 
     def test_mark_successful(self, base_mentee, base_mentor):

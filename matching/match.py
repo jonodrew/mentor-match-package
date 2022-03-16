@@ -13,7 +13,6 @@ class Match:
         self.mentor = mentor
         self._disallowed: bool = False
         self._score: int = 0
-        self.calculate_match()
 
     @property
     def score(self):
@@ -35,11 +34,11 @@ class Match:
         if self._disallowed is False and new_value is True:
             self._disallowed = new_value
 
-    def calculate_match(self) -> None:
+    def calculate_match(self) -> "Match":
         """
         This method calculates the score for this Match object. It does this by applying the functions below. If at any
         point the match becomes disallowed, the loop breaks. Note that if the match is disallowed, the score property
-        always returns 0.
+        always returns 0. One complete, it returns the object
         """
         scoring_methods: List[Callable[[], None]] = [
             self.check_not_already_matched,
@@ -51,6 +50,7 @@ class Match:
         while not self._disallowed and scoring_methods:
             scoring_method = scoring_methods.pop()
             scoring_method()
+        return self
 
     def score_grade(self) -> None:
         """
