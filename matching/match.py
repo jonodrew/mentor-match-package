@@ -1,9 +1,8 @@
 import logging
 from typing import TYPE_CHECKING, Callable, List, Dict, Optional
 
-from matching.rule import Rule
-
 if TYPE_CHECKING:
+    from matching.rule import Rule
     from matching.mentor import Mentor
     from matching.mentee import Mentee
 
@@ -14,7 +13,7 @@ class Match:
         mentor: "Mentor",
         mentee: "Mentee",
         weightings: Dict[str, int],
-        rules: Optional[List[Rule]] = None,
+        rules: Optional[List["Rule"]] = None,
     ):
         self.weightings = weightings
         self.mentee = mentee
