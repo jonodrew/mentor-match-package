@@ -2,7 +2,7 @@ import logging
 from typing import TYPE_CHECKING, Callable, List, Dict, Optional
 
 if TYPE_CHECKING:
-    from matching.rule import Rule
+    from matching.rules.rule import Rule
     from matching.mentor import Mentor
     from matching.mentee import Mentee
 
@@ -55,9 +55,14 @@ class Match:
             self.score_profession,
             self.score_unmatched,
         ]
-        while not self._disallowed and scoring_methods:
-            scoring_method = scoring_methods.pop()
-            scoring_method()
+        if self.rules:
+            while not self.disallowed and self.rules:
+                rule = self.rules.pop()
+                self.score += rule.apply(self)
+        else:
+            while not self._disallowed and scoring_methods:
+                scoring_method = scoring_methods.pop()
+                scoring_method()
         return self
 
     def score_grade(self) -> None:

@@ -11,7 +11,7 @@ from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
-from matching.rule import Rule
+from matching.rules.rule import Rule
 
 
 def generate_match_matrix(

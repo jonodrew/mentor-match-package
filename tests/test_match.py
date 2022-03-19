@@ -1,5 +1,7 @@
 import functools
+from unittest.mock import Mock
 
+import matching.rules.rule as rules
 from matching.match import Match
 from matching.mentor import Mentor
 from matching.mentee import Mentee
@@ -37,12 +39,13 @@ class TestMatch:
             assert not match.disallowed
 
     def test_matching_profession_scores_four_points(self, base_mentor, base_mentee):
-        base_mentor.grade = "Grade 6"  # 1 grade diff
         base_mentor.department = "Department of Sad"
-        match = TestMatch.new_match(
-            mentor=base_mentor, mentee=base_mentee
-        ).calculate_match()
-        assert match.score - match.weightings["grade"] == 4
+        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
+        rule = Mock(spec=rules.Equivalent)
+        rule.apply.return_value = 4
+        match.rules = [rule]
+        match.calculate_match()
+        assert match.score == 4
 
     def test_mark_successful(self, base_mentee, base_mentor):
         match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
