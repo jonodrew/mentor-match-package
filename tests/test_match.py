@@ -15,11 +15,15 @@ class TestMatch:
         Match, weightings={"profession": 4, "grade": 3, "unmatched bonus": 0}
     )
 
+    @pytest.mark.integration
     def test_cant_match_with_same_department(
         self, base_mentee: Mentee, base_mentor: Mentor
     ):
         base_mentee.department = base_mentor.department = "Department of Fun"
         match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
+        match.rules = [
+            rl.Disqualify(rl.Equivalent({True: 0, False: 0}, "department").evaluate)
+        ]
         match.calculate_match()
         assert match.disallowed
 
