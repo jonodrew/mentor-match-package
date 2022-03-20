@@ -79,6 +79,10 @@ class Person:
                     output[f"match {i + 1} {key}"] = value
         return output
 
-    def __eq__(self, other):
-        if type(other) == type(self):
-            return other.to_dict() == self.to_dict()
+    def class_name(self):
+        return self.__class__.__name__.lower()
+
+    def __eq__(self, other: "Person"):
+        return other.to_dict().get(other.class_name()) == self.to_dict().get(
+            self.class_name()
+        )
