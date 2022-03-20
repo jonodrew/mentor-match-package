@@ -26,7 +26,6 @@ class Match:
                 lambda match: match.mentor in match.mentee.mentors
                 or match.mentee in match.mentor.mentees
             ),
-            rl.UnmatchedBonus(50),
         ]
         if rules:
             self.rules.extend(rules)

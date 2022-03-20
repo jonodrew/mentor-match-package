@@ -11,7 +11,7 @@ from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
-from matching.rules.rule import Rule
+from matching.rules.rule import Rule, UnmatchedBonus
 
 
 def generate_match_matrix(
@@ -104,7 +104,7 @@ def process_data(
     :return:
     """
     if not rules:
-        rules = [[] for _ in range(len(weightings_list))]
+        rules = [[UnmatchedBonus(10)] for _ in range(len(weightings_list))]
     matrices = map(
         functools.partial(generate_match_matrix, mentors, mentees),
         weightings_list,
