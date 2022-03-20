@@ -1,6 +1,5 @@
 import functools
 import operator
-from unittest.mock import Mock
 
 import matching.rules.rule as rl
 from matching.match import Match
@@ -20,10 +19,13 @@ class TestMatch:
         self, base_mentee: Mentee, base_mentor: Mentor
     ):
         base_mentee.department = base_mentor.department = "Department of Fun"
-        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
-        match.rules = [
-            rl.Disqualify(rl.Equivalent({True: 0, False: 0}, "department").evaluate)
-        ]
+        match = TestMatch.new_match(
+            mentor=base_mentor,
+            mentee=base_mentee,
+            rules=[
+                rl.Disqualify(rl.Equivalent("department", {True: 0, False: 0}).evaluate)
+            ],
+        )
         match.calculate_match()
         assert match.disallowed
 
@@ -36,16 +38,18 @@ class TestMatch:
         base_mentee.grade = mentee_grade
         base_mentor.grade = mentor_grade
 
-        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
-        rules = [
-            rl.Disqualify(
-                rl.Grade(target_diff=2, logical_operator=operator.gt).evaluate
-            ),
-            rl.Disqualify(
-                rl.Grade(target_diff=0, logical_operator=operator.le).evaluate
-            ),
-        ]
-        match.rules = rules
+        match = TestMatch.new_match(
+            mentor=base_mentor,
+            mentee=base_mentee,
+            rules=[
+                rl.Disqualify(
+                    rl.Grade(target_diff=2, logical_operator=operator.gt).evaluate
+                ),
+                rl.Disqualify(
+                    rl.Grade(target_diff=0, logical_operator=operator.le).evaluate
+                ),
+            ],
+        )
         match.calculate_match()
         grade_diff = base_mentor.grade - base_mentee.grade
         if not (2 >= grade_diff > 0):
@@ -53,24 +57,15 @@ class TestMatch:
         else:
             assert not match.disallowed
 
-    def test_matching_profession_scores_four_points(self, base_mentor, base_mentee):
-        base_mentor.department = "Department of Sad"
-        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
-        rule = Mock(spec=rl.Equivalent)
-        rule.apply.return_value = 4
-        match.rules = [rule]
-        match.calculate_match()
-        assert match.score == 4
-
     def test_mark_successful(self, base_mentee, base_mentor):
-        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
+        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee, rules=[])
         match.mark_successful()
         assert base_mentor in base_mentee.mentors
         assert base_mentee in base_mentor.mentees
 
     def test_cant_match_with_self(self, base_mentee, base_data):
         mentor = Mentor(**base_data)
-        match = TestMatch.new_match(mentor=mentor, mentee=base_mentee)
+        match = TestMatch.new_match(mentor=mentor, mentee=base_mentee, rules=[])
         match.calculate_match()
         assert match.disallowed
 
@@ -78,6 +73,8 @@ class TestMatch:
         self, base_mentee, base_mentor
     ):
         base_mentor.mentees.append(base_mentee)
-        test_match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
+        test_match = TestMatch.new_match(
+            mentor=base_mentor, mentee=base_mentee, rules=[]
+        )
         test_match.calculate_match()
         assert test_match.disallowed

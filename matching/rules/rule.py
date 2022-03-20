@@ -57,7 +57,7 @@ class Grade(Rule):
 
 
 class Equivalent(Rule):
-    def __init__(self, score_dict: Dict[bool, int], attribute: str):
+    def __init__(self, attribute: str, score_dict: Union[Dict[bool, int], None] = None):
         super(Equivalent, self).__init__(score_dict)
         self.attribute = attribute
 

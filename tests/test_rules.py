@@ -13,7 +13,7 @@ def test_match(base_mentor, base_mentee):
 
 class TestRules:
     def test_matching_scores_scores_correct_points(self, test_match):
-        profession_rule = rl.Equivalent({True: 4, False: 0}, "profession")
+        profession_rule = rl.Equivalent("profession", {True: 4, False: 0})
         assert profession_rule.apply(test_match) == 4
 
     @pytest.mark.parametrize("mentee_grade", [grade for grade in range(11)])

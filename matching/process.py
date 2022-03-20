@@ -1,5 +1,6 @@
 import csv
 import functools
+import operator
 import os
 import pathlib
 import sys
@@ -11,14 +12,14 @@ from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
-from matching.rules.rule import Rule, UnmatchedBonus
+import matching.rules.rule as rl
 
 
 def generate_match_matrix(
     mentor_list: List[Mentor],
     mentee_list: List[Mentee],
     weightings: Dict[str, int],
-    rules: Optional[List[Rule]] = None,
+    rules: Optional[List[rl.Rule]] = None,
 ) -> List[List[Match]]:
     return [
         [
@@ -92,23 +93,42 @@ def process_data(
     mentors: List[Mentor],
     mentees: List[Mentee],
     weightings_list: List[Dict[str, int]],
-    rules: Optional[List[List[Rule]]] = None,
+    all_rules: Optional[List[List[rl.Rule]]] = None,
 ) -> Tuple[List[Mentor], List[Mentee]]:
     """
     This is the main entrypoint for this software. It lazily generates three matrices, which allows for them to be
     mutated over the course of the matching process.
-    :param rules:
+    :param all_rules:
     :param mentors:
     :param mentees:
     :param weightings_list:
     :return:
     """
-    if not rules:
-        rules = [[UnmatchedBonus(10)] for _ in range(len(weightings_list))]
+    if not all_rules:
+        base_rules: List[rl.AbstractRule] = [
+            rl.Disqualify(rl.Equivalent("department").evaluate),
+            rl.Disqualify(
+                rl.Grade(target_diff=2, logical_operator=operator.gt).evaluate
+            ),
+            rl.Disqualify(
+                rl.Grade(target_diff=0, logical_operator=operator.le).evaluate
+            ),
+        ]
+        all_rules = [base_rules for _ in range(len(weightings_list))]
+        for i, match_round in enumerate(weightings_list):
+            unique_rules = [
+                rl.Grade(1, operator.eq, {True: match_round.get("grade", 3), False: 0}),
+                rl.Grade(2, operator.eq, {True: match_round.get("grade", 6), False: 0}),
+                rl.Equivalent(
+                    "profession", {True: match_round.get("profession", 0), False: 0}
+                ),
+                rl.UnmatchedBonus(match_round.get("unmatched bonus", 0)),
+            ]
+            all_rules[i].extend(unique_rules)
     matrices = map(
         functools.partial(generate_match_matrix, mentors, mentees),
         weightings_list,
-        rules,
+        all_rules,
     )
     for matrix in matrices:
         match_and_assign_participants(matrix)
