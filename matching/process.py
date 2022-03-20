@@ -129,7 +129,7 @@ def create_mailing_list(
     """
     This function takes a list of either matched mentors or matched mentees. For each participant, it outputs their
     data and the information of the participants they've been matched with. If a particpant doesn't have the full
-    compliment of three matches, the empty spaces are ignored.
+    complement of three matches, the empty spaces are ignored.
     """
     file_name = f"{type(participant_list[0]).__name__.lower()}s-list.csv"
     file = output_folder.joinpath(file_name)
