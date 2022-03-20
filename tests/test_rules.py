@@ -1,7 +1,7 @@
 import operator
 from unittest.mock import Mock
 
-import matching.rules.rule as rl
+from matching.rules import rule as rl
 from matching.match import Match
 import pytest
 

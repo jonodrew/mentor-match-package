@@ -1,8 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, Callable, List, Dict, Optional
+from typing import TYPE_CHECKING, List, Dict, Optional, Callable
+from matching.rules import rule as rl
 
 if TYPE_CHECKING:
-    from matching.rules.rule import Rule
     from matching.mentor import Mentor
     from matching.mentee import Mentee
 
@@ -13,14 +13,23 @@ class Match:
         mentor: "Mentor",
         mentee: "Mentee",
         weightings: Dict[str, int],
-        rules: Optional[List["Rule"]] = None,
+        rules: Optional[List["rl.Rule"]] = None,
     ):
         self.weightings = weightings
         self.mentee = mentee
         self.mentor = mentor
         self._disallowed: bool = False
         self._score: int = 0
-        self.rules = rules
+        self.rules = [
+            rl.Disqualify(lambda match: match.mentor == match.mentee),
+            rl.Disqualify(
+                lambda match: match.mentor in match.mentee.mentors
+                or match.mentee in match.mentor.mentees
+            ),
+            rl.UnmatchedBonus(50),
+        ]
+        if rules:
+            self.rules.extend(rules)
 
     @property
     def score(self):
