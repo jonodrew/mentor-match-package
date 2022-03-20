@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["matching"],
+    packages=["matching", "matching/rules"],
     include_package_data=True,
     install_requires=["munkres"],
     setup_requires=["wheel"],
