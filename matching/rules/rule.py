@@ -1,6 +1,6 @@
 import operator
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, TYPE_CHECKING
+from typing import Callable, Dict, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from matching.match import Match
@@ -13,7 +13,9 @@ class AbstractRule(ABC):
 
 
 class Rule(AbstractRule):
-    def __init__(self, score_dict: Dict[bool, int]):
+    def __init__(self, score_dict: Union[Dict[bool, int], None] = None):
+        if score_dict is None:
+            score_dict = {True: 0, False: 0}
         self.results = score_dict
 
     def apply(self, match_object: "Match") -> int:
@@ -40,9 +42,9 @@ class UnmatchedBonus(Rule):
 class Grade(Rule):
     def __init__(
         self,
-        score_dict: Dict[bool, int],
         target_diff: int,
         logical_operator: Callable[[int, int], bool],
+        score_dict: Union[Dict[bool, int], None] = None,
     ):
         super(Grade, self).__init__(score_dict)
         self.target_diff = target_diff

@@ -38,8 +38,12 @@ class TestMatch:
 
         match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee)
         rules = [
-            rl.Disqualify(rl.Grade({True: 0, False: 0}, 2, operator.gt).evaluate),
-            rl.Disqualify(rl.Grade({True: 0, False: 0}, 0, operator.le).evaluate),
+            rl.Disqualify(
+                rl.Grade(target_diff=2, logical_operator=operator.gt).evaluate
+            ),
+            rl.Disqualify(
+                rl.Grade(target_diff=0, logical_operator=operator.le).evaluate
+            ),
         ]
         match.rules = rules
         match.calculate_match()

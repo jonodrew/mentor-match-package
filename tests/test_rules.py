@@ -26,7 +26,9 @@ class TestRules:
         test_match.mentee.grade = mentee_grade
         grade_diff = mentor_grade - mentee_grade
         test_match.disallowed = False
-        dq_rule = rl.Disqualify(rl.Grade({True: 0, False: 0}, 3, operator.ge).evaluate)
+        dq_rule = rl.Disqualify(
+            lambda match: (match.mentor.grade - match.mentee.grade) > 2
+        )
         dq_rule.apply(test_match)
         if grade_diff > 2:
             assert test_match.disallowed
@@ -41,8 +43,16 @@ class TestRules:
         test_match.mentee.grade = mentee_grade
         grade_diff = test_match.mentor.grade - test_match.mentee.grade
         rules = [
-            rl.Grade({True: 2, False: 0}, target_diff=1, logical_operator=operator.eq),
-            rl.Grade({True: 4, False: 0}, target_diff=2, logical_operator=operator.eq),
+            rl.Grade(
+                target_diff=1,
+                logical_operator=operator.eq,
+                score_dict={True: 2, False: 0},
+            ),
+            rl.Grade(
+                target_diff=2,
+                logical_operator=operator.eq,
+                score_dict={True: 4, False: 0},
+            ),
         ]
         score = sum(map(lambda rule: rule.apply(test_match), rules))
         if grade_diff == 1:
