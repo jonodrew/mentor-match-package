@@ -83,16 +83,16 @@ class Generic(Rule):
         return self._evaluate(match_object)
 
 
-class Disqualify(AbstractRule):
+class Disqualify(Generic):
     """
     A disqualifying rule is a kind of anti-rule. Here, we pass a condition which, if it evaluates to `True`, should
     disqualify a `Match` rather than increase its score.
     """
 
     def __init__(self, disqualifying_condition: Callable[["Match"], bool]):
-        self.condition = disqualifying_condition
+        super(Disqualify, self).__init__(None, disqualifying_condition)
 
     def apply(self, match_object: "Match") -> int:
-        if self.condition(match_object):
+        if super(Disqualify, self).evaluate(match_object):
             match_object.disallowed = True
         return 0
