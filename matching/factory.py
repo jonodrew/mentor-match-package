@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from matching.mentee import Mentee
 from matching.mentor import Mentor
-from matching.person import GRADES, Person
+from matching.person import Person
 
 
 class ParticipantFactory:
@@ -13,17 +13,12 @@ class ParticipantFactory:
         participant_type_str = list(data_as_dict).pop()
         participant_type = cls.participant_types.get(participant_type_str, Person)
         participant_data = data_as_dict.get(participant_type_str, dict())
-        participant = participant_type()
-        participant._grade = GRADES.index(participant_data["grade"])
-        participant.department = participant_data["department"]
-        participant.profession = participant_data["profession"]
-        participant.email = participant_data["email"]
-        participant.first_name = participant_data["first name"]
-        participant.last_name = participant_data["last name"]
-        participant.role = participant_data["role"]
+        participant = participant_type(**participant_data)
         connections: List[Dict[str, str]] = participant_data.get("connections", [])
         participant._connections = [
             ParticipantFactory.create_from_dict(connection_data)
             for connection_data in connections
         ]
+        if type(participant) is Mentee:
+            participant.target_profession = participant_data["target profession"]
         return participant

@@ -70,16 +70,29 @@ class Equivalent(Rule):
         return operator.eq(*attrs)
 
 
-class Disqualify(AbstractRule):
+class Generic(Rule):
+    def __init__(
+        self,
+        score_dict: Union[Dict[bool, int], None],
+        evaluation_func: Callable[["Match"], bool],
+    ):
+        super(Generic, self).__init__(score_dict)
+        self._evaluate = evaluation_func
+
+    def evaluate(self, match_object: "Match") -> bool:
+        return self._evaluate(match_object)
+
+
+class Disqualify(Generic):
     """
     A disqualifying rule is a kind of anti-rule. Here, we pass a condition which, if it evaluates to `True`, should
     disqualify a `Match` rather than increase its score.
     """
 
     def __init__(self, disqualifying_condition: Callable[["Match"], bool]):
-        self.condition = disqualifying_condition
+        super(Disqualify, self).__init__(None, disqualifying_condition)
 
     def apply(self, match_object: "Match") -> int:
-        if self.condition(match_object):
+        if super(Disqualify, self).evaluate(match_object):
             match_object.disallowed = True
         return 0

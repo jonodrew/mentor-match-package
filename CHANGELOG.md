@@ -7,6 +7,29 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## 5.0.1
+
+### Added
+
+- `Mentee` objects can specify a quality they'd like their `Mentor` to have, and `Mentor`s can specify a range of qualities they have. This might be professional skills, like 'software development' or 'cattle wrangling'. Alternatively, if you are targeting under-represented groups, this might be a gender, sexual, or racial identity.
+
+## 5.0.0 2022-04-14
+
+### Changed
+
+- The `Person` object must now be instantiated from a simpler dictionary, with one-word keys. See the example csv for what those are
+- Oh, I added an example csv file!
+- `profession` has been renamed to `current_profession`
+
+### Removed
+
+- `Person.grade` is now always an `int`. This generalises the software away from a purely Civil Service basis, but does mean that users are required to do their own mapping of integers to human-readable strings
+
+### Added
+
+- `Mentee` objects now have a `target_profession` as well as a `current_profession`
+- There is now a `Generic` rule object, where you can pass a `lambda` if your condition is nice and simple. Or even if it's not, I'm not the boss of you.
+
 ## 4.0.0 2022-03-20
 
 ### Removed

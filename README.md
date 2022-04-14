@@ -16,7 +16,7 @@ You can install this project with `python -m pip install mentor-match`
 ## Use
 
 To use this library, first install it (see above). You may need to munge your data for the system to be happy with it.
-Use the attached CSV files as guides for your mentor and mentee data, then put them together in the same folder.
+Use the [example CSV file](example.csv) as guides for your mentor and mentee data, then put them together in the same folder.
 
 The software will run three matching exercises. Participants who don't match in the first round are more heavily
 weighted in the next round. The aim is to improve the experience for everyone.
@@ -24,11 +24,11 @@ weighted in the next round. The aim is to improve the experience for everyone.
 The weightings are as follows:
 
 
-| property            | First run | Second run | Third run |
-|---------------------|-----------|------------|-----------|
-| **profession**      | 4         | 4          | 0         |
-| **grade**           | 3         | 3          | 3         |
-| **unmatched bonus** | 0         | 50         | 100       |
+| property                                                          | First run | Second run | Third run |
+|-------------------------------------------------------------------|-----------|------------|-----------|
+| **mentee's target profession is the same as mentor's profession** | 4         | 4          | 0         |
+| **grade is one or two grades different**                          | 3         | 3          | 3         |
+| **bonus for anyone's who's not got a match yet**                  | 0         | 50         | 100       |
 
 
 Here is a snippet that outlines a minimal use in a Python project:

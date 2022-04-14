@@ -3,7 +3,6 @@ import pytest as pytest
 from matching.mentee import Mentee
 from matching.mentor import Mentor
 from matching.process import create_participant_list_from_path
-from datetime import datetime
 import math
 import csv
 
@@ -15,31 +14,29 @@ def known_file(base_data):
         data_path = path_to_file / f"{role_type}s.csv"
         with open(data_path, "w", newline="") as test_data:
             headings = [
-                "Timestamp",
-                f"Do you want to sign up as a {role_type}?",
-                "Do you agree to us using the information you provide to us in this way?",
-                "Your first name",
-                "Your last name",
-                "Your Civil Service email address",
-                "Your job title or role",
-                "Your department or agency",
-                "Your grade",
-                "Your profession",
+                role_type,
+                "first name",
+                "last name",
+                "email",
+                "role",
+                "organisation",
+                "grade",
+                "current profession",
+                "target profession",
             ]
             data = [headings]
             for i in range(quantity):
                 data.append(
                     [
-                        str(datetime.now()),
-                        "yes",
                         "yes",
                         role_type,
                         str(i).zfill(padding_size),
                         f"{role_type}.{str(i).zfill(padding_size)}@gov.uk",
                         "Some role",
                         f"Department of {role_type.capitalize()}s",
-                        "EO" if role_type == "mentor" else "AA",
-                        "Participant",
+                        2 if role_type == "mentor" else 0,
+                        "Policy",
+                        "Policy",
                     ]
                 )
             file_writer = csv.writer(test_data)
@@ -65,24 +62,26 @@ def test_participants(test_data_path, known_file):
 @pytest.fixture
 def base_data() -> dict:
     return {
-        "Your first name": "Test",
-        "Your last name": "Data",
-        "Your Civil Service email address": "test@data.com",
-        "Your job title or role": "N/A",
-        "Your department or agency": "Department of Fun",
-        "Your grade": "Grade 7",
-        "Your profession": "Policy",
+        "first name": "Test",
+        "last name": "Data",
+        "email": "test@data.com",
+        "role": "N/A",
+        "organisation": "Department of Fun",
+        "grade": 5,
+        "current profession": "Policy",
     }
 
 
 @pytest.fixture
 def base_mentee(base_data):
-    return Mentee(**base_data)
+    mentee = Mentee(**base_data)
+    mentee.target_profession = "Policy"
+    return mentee
 
 
 @pytest.fixture
 def base_mentor(base_data):
     data_copy = base_data.copy()
-    data_copy["Your grade"] = "Grade 6"
-    data_copy["Your department or agency"] = "Ministry of Silly Walks"
+    data_copy["grade"] = 6
+    data_copy["organisation"] = "Ministry of Silly Walks"
     return Mentor(**data_copy)
