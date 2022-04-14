@@ -106,7 +106,9 @@ def process_data(
     """
     if not all_rules:
         base_rules: List[rl.AbstractRule] = [
-            rl.Disqualify(rl.Equivalent("department").evaluate),
+            rl.Disqualify(
+                lambda match: match.mentee.organisation == match.mentor.organisation
+            ),
             rl.Disqualify(
                 rl.Grade(target_diff=2, logical_operator=operator.gt).evaluate
             ),
@@ -119,8 +121,10 @@ def process_data(
             unique_rules = [
                 rl.Grade(1, operator.eq, {True: match_round.get("grade", 3), False: 0}),
                 rl.Grade(2, operator.eq, {True: match_round.get("grade", 6), False: 0}),
-                rl.Equivalent(
-                    "profession", {True: match_round.get("profession", 0), False: 0}
+                rl.Generic(
+                    {True: match_round.get("profession", 0), False: 0},
+                    lambda match: match.mentee.target_profession
+                    == match.mentor.current_profession,
                 ),
                 rl.UnmatchedBonus(match_round.get("unmatched bonus", 0)),
             ]

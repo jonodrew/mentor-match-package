@@ -1,42 +1,22 @@
 from typing import List, Dict, Union
 
-GRADES = [
-    "AA",
-    "AO",
-    "EO",
-    "HEO",
-    "SEO",
-    "Grade 7",
-    "Grade 6",
-    "SCS1",
-    "SCS2",
-    "SCS3",
-    "SCS4",
-]
-
 
 class Person:
     def __init__(self, **kwargs):
-        self._grade: int = GRADES.index(kwargs.get("Your grade", "AA"))
-        self.department: str = kwargs.get("Your department or agency", None)
-        self.profession: str = kwargs.get("Your profession", None)
-        self.email = kwargs.get("Your Civil Service email address", None)
-        self.first_name = kwargs.get("Your first name", None)
-        self.last_name = kwargs.get("Your last name", None)
-        self.role = kwargs.get("Your job title or role", None)
+        """
+        When creating a person from a dictionary, we expect a grade as an integer. The lower the `int`, the lower the
+        grade. It is the client's responsibility to turn this integer back into a human-readable `str` if needed
+        :param kwargs:
+        """
+        self.grade: int = int(kwargs.get("grade"))
+        self.organisation: str = kwargs.get("organisation", None)
+        self.current_profession: str = kwargs.get("current profession", None)
+        self.email = kwargs.get("email", None)
+        self.first_name = kwargs.get("first name", None)
+        self.last_name = kwargs.get("last name", None)
+        self.role = kwargs.get("role", None)
         self._connections: List[Person] = []
         self.has_no_match: bool = False
-
-    @property
-    def grade(self):
-        return self._grade
-
-    @grade.setter
-    def grade(self, new_grade: str):
-        if new_grade in GRADES:
-            self._grade = GRADES.index(new_grade)
-        else:
-            raise NotImplementedError
 
     @property
     def connections(self) -> List["Person"]:
@@ -65,9 +45,9 @@ class Person:
                 "first name": self.first_name,
                 "last name": self.last_name,
                 "role": self.role,
-                "department": self.department,
-                "grade": GRADES[self.grade],
-                "profession": self.profession,
+                "organisation": self.organisation,
+                "grade": self.grade,
+                "current profession": self.current_profession,
             }
         }
 

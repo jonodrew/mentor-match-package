@@ -5,7 +5,6 @@ import matching.rules.rule as rl
 from matching.match import Match
 from matching.mentor import Mentor
 from matching.mentee import Mentee
-from matching.person import GRADES
 import pytest
 
 
@@ -18,20 +17,22 @@ class TestMatch:
     def test_cant_match_with_same_department(
         self, base_mentee: Mentee, base_mentor: Mentor
     ):
-        base_mentee.department = base_mentor.department = "Department of Fun"
+        base_mentee.organisation = base_mentor.organisation = "Department of Fun"
         match = TestMatch.new_match(
             mentor=base_mentor,
             mentee=base_mentee,
             rules=[
-                rl.Disqualify(rl.Equivalent("department", {True: 0, False: 0}).evaluate)
+                rl.Disqualify(
+                    rl.Equivalent("organisation", {True: 0, False: 0}).evaluate
+                )
             ],
         )
         match.calculate_match()
         assert match.disallowed
 
     @pytest.mark.integration
-    @pytest.mark.parametrize("mentee_grade", [grade for grade in GRADES])
-    @pytest.mark.parametrize("mentor_grade", [grade for grade in GRADES])
+    @pytest.mark.parametrize("mentee_grade", range(11))
+    @pytest.mark.parametrize("mentor_grade", range(11))
     def test_cant_match_with_greater_than_two_grade_difference(
         self, base_mentee, base_mentor, mentee_grade, mentor_grade
     ):
