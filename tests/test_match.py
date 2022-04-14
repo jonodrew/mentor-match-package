@@ -38,6 +38,9 @@ class TestMatch:
         base_mentee.grade = mentee_grade
         base_mentor.grade = mentor_grade
 
+        base_mentee.email = "mentee"
+        base_mentor.email = "mentor"
+
         match = TestMatch.new_match(
             mentor=base_mentor,
             mentee=base_mentee,
@@ -65,6 +68,7 @@ class TestMatch:
 
     def test_cant_match_with_self(self, base_mentee, base_data):
         mentor = Mentor(**base_data)
+        mentor.email = base_mentee.email = "same@email.com"
         match = TestMatch.new_match(mentor=mentor, mentee=base_mentee, rules=[])
         match.calculate_match()
         assert match.disallowed

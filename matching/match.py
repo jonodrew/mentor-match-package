@@ -30,7 +30,7 @@ class Match:
         self._disallowed: bool = False
         self._score: int = 0
         self.rules = [
-            rl.Disqualify(lambda match: match.mentor == match.mentee),
+            rl.Disqualify(lambda match: match.mentor.email == match.mentee.email),
             rl.Disqualify(
                 lambda match: match.mentor in match.mentee.mentors
                 or match.mentee in match.mentor.mentees

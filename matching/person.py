@@ -83,6 +83,4 @@ class Person:
         return self.__class__.__name__.lower()
 
     def __eq__(self, other: "Person"):
-        return other.to_dict().get(other.class_name()) == self.to_dict().get(
-            self.class_name()
-        )
+        return self.email == other.email
