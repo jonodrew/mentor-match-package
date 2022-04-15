@@ -7,28 +7,46 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## 5.0.1
+## Added
+
+- `Mentee` objects can specify a quality they'd like their `Mentor` to have, and `Mentor`s can specify a range of
+  qualities they have. This might be professional skills, like 'software development' or 'cattle wrangling'.
+  Alternatively, if you are targeting under-represented groups, this might be a gender, sexual, or racial identity.
+
+## 5.1.0 2022-04-15
 
 ### Added
 
-- `Mentee` objects can specify a quality they'd like their `Mentor` to have, and `Mentor`s can specify a range of qualities they have. This might be professional skills, like 'software development' or 'cattle wrangling'. Alternatively, if you are targeting under-represented groups, this might be a gender, sexual, or racial identity.
+- Users can pass a mapping function to `create_participant_list_from_path`. The function will be passed
+  a `dict[str, str]`, representing a row in the user-uploaded spreadsheet, and can also access a string representation
+  of the type of participant - "mentor" or "mentee". This function is optional, but the software will break in ugly
+  ways if your spreadsheet doesn't have the headings in the [example csv file](./example.csv). It can have others,
+  but they'll be ignored
+
+### Changed
+
+- I've updated the csv file and removed the "role type" heading, because it's currently not important. I will put an
+  issue on the roadmap to allow users to upload a single spreadsheet with everyone on it
 
 ## 5.0.0 2022-04-14
 
 ### Changed
 
-- The `Person` object must now be instantiated from a simpler dictionary, with one-word keys. See the example csv for what those are
+- The `Person` object must now be instantiated from a simpler dictionary, with one-word keys. See the example csv for
+  what those are
 - Oh, I added an example csv file!
 - `profession` has been renamed to `current_profession`
 
 ### Removed
 
-- `Person.grade` is now always an `int`. This generalises the software away from a purely Civil Service basis, but does mean that users are required to do their own mapping of integers to human-readable strings
+- `Person.grade` is now always an `int`. This generalises the software away from a purely Civil Service basis, but does
+  mean that users are required to do their own mapping of integers to human-readable strings
 
 ### Added
 
 - `Mentee` objects now have a `target_profession` as well as a `current_profession`
-- There is now a `Generic` rule object, where you can pass a `lambda` if your condition is nice and simple. Or even if it's not, I'm not the boss of you.
+- There is now a `Generic` rule object, where you can pass a `lambda` if your condition is nice and simple. Or even if
+  it's not, I'm not the boss of you.
 
 ## 4.0.0 2022-03-20
 
@@ -40,12 +58,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   **non-breaking**.
 
 ### Added
+
 - A `Rule` class, which describes the rules to be used for scoring `Match` objects. All `Rule` subclasses must implement
-an `evaluate` method that takes a `Match` object and returns a `bool`
+  an `evaluate` method that takes a `Match` object and returns a `bool`
 
 ### Deprecated
+
 - In the next release, clients will create `Rule` objects with scores, and `weighting_list` will not be passed to
-`process_data`
+  `process_data`
+
 ## 3.0.0 2022-03-13
 
 ### Removed
