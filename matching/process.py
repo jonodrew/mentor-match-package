@@ -5,7 +5,7 @@ import os
 import pathlib
 import sys
 from pathlib import Path
-from typing import Union, Type, List, Dict, Tuple, Generator, Optional
+from typing import Union, Type, List, Dict, Tuple, Generator, Optional, Callable
 
 from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 
@@ -38,10 +38,17 @@ def process_form(path_to_form) -> Generator[Dict[str, str], None, None]:
 
 
 def create_participant_list_from_path(
-    participant: Union[Type[Mentee], Type[Mentor]], path_to_data: pathlib.Path
+    participant: Union[Type[Mentee], Type[Mentor]],
+    path_to_data: pathlib.Path,
+    mapping_func: Optional[
+        Callable[[dict[str, str], str], dict[str, str]]
+    ] = lambda row, name: row,
 ):
     path_to_data = path_to_data / f"{participant.__name__.lower()}s.csv"
-    return [participant(**row) for row in process_form(path_to_data)]
+    return [
+        participant(**mapping_func(row, participant.__name__.lower()))
+        for row in process_form(path_to_data)
+    ]
 
 
 def transpose_matrix(matrix):

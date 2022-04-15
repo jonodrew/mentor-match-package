@@ -14,7 +14,6 @@ def known_file(base_data):
         data_path = path_to_file / f"{role_type}s.csv"
         with open(data_path, "w", newline="") as test_data:
             headings = [
-                role_type,
                 "first name",
                 "last name",
                 "email",
@@ -28,7 +27,6 @@ def known_file(base_data):
             for i in range(quantity):
                 data.append(
                     [
-                        "yes",
                         role_type,
                         str(i).zfill(padding_size),
                         f"{role_type}.{str(i).zfill(padding_size)}@gov.uk",
