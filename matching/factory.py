@@ -16,8 +16,7 @@ class ParticipantFactory:
         participant = participant_type(**participant_data)
         connections: List[Dict[str, str]] = participant_data.get("connections", [])
         participant._connections = [
-            ParticipantFactory.create_from_dict(connection_data)
-            for connection_data in connections
+            cls.create_from_dict(connection_data) for connection_data in connections
         ]
         if type(participant) is Mentee:
             participant.target_profession = participant_data["target profession"]
