@@ -27,5 +27,5 @@ class Mentee(Person):
 
     def core_to_dict(self) -> Dict[str, Dict[str, Union[str, List]]]:
         core = super(Mentee, self).core_to_dict()
-        core["mentee"]["target profession"] = self.target_profession
+        core[self.class_name()]["target profession"] = self.target_profession
         return core

@@ -33,14 +33,14 @@ class Person:
         self,
     ) -> Dict[str, Dict[str, Union[str, List[Dict[str, Dict[str, str]]]]]]:
         output = self.core_to_dict()
-        output[self.__class__.__name__.lower()]["connections"] = [
+        output[self.class_name()]["connections"] = [
             connection.core_to_dict() for connection in self.connections
         ]
         return output
 
     def core_to_dict(self) -> Dict[str, Dict[str, Union[str, List]]]:
         return {
-            self.__class__.__name__.lower(): {
+            self.class_name(): {
                 "email": self.email,
                 "first name": self.first_name,
                 "last name": self.last_name,
@@ -52,7 +52,7 @@ class Person:
         }
 
     def to_dict_for_output(self, depth=1) -> dict:
-        output = self.core_to_dict()[self.__class__.__name__.lower()]
+        output = self.core_to_dict()[self.class_name()]
         if depth == 1:
             for i, connection in enumerate(self._connections):
                 for key, value in connection.to_dict_for_output(depth=0).items():
