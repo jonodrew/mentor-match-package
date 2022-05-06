@@ -44,9 +44,9 @@ def create_participant_list_from_path(
         Callable[[dict[str, str], str], dict[str, str]]
     ] = lambda row, name: row,
 ):
-    path_to_data = path_to_data / f"{participant.__name__.lower()}s.csv"
+    path_to_data = path_to_data / f"{participant.__str__()}s.csv"
     return [
-        participant(**mapping_func(row, participant.__name__.lower()))
+        participant(**mapping_func(row, participant.__str__()))
         for row in process_form(path_to_data)
     ]
 
@@ -162,7 +162,7 @@ def create_mailing_list(
     data and the information of the participants they've been matched with. If a particpant doesn't have the full
     complement of three matches, the empty spaces are ignored.
     """
-    file_name = f"{type(participant_list[0]).__name__.lower()}s-list.csv"
+    file_name = f"{type(participant_list[0]).__str__()}s-list.csv"
     file = output_folder.joinpath(file_name)
     list_participants_as_dicts = [
         participant.to_dict_for_output() for participant in participant_list
