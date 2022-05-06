@@ -16,3 +16,7 @@ class Mentor(Person):
     @mentees.setter
     def mentees(self, new_mentee: "Mentee"):
         super(Mentor, self).connections.append(new_mentee)
+
+    @classmethod
+    def __str__(cls):
+        return "mentor"

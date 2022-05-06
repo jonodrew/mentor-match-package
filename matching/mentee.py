@@ -29,3 +29,7 @@ class Mentee(Person):
         core = super(Mentee, self).core_to_dict()
         core[self.class_name()]["target profession"] = self.target_profession
         return core
+
+    @classmethod
+    def __str__(cls):
+        return "mentee"
