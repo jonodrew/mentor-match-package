@@ -159,13 +159,13 @@ def create_mailing_list(
 ):
     """
     This function takes a list of either matched mentors or matched mentees. For each participant, it outputs their
-    data and the information of the participants they've been matched with. If a particpant doesn't have the full
+    data and the information of the participants they've been matched with. If a participant doesn't have the full
     complement of three matches, the empty spaces are ignored.
     """
     file_name = f"{type(participant_list[0]).__str__()}s-list.csv"
     file = output_folder.joinpath(file_name)
     list_participants_as_dicts = [
-        participant.to_dict_for_output() for participant in participant_list
+        participant.to_dict_for_export() for participant in participant_list
     ]
     field_headings = max(
         list_participants_as_dicts, key=lambda participant: len(participant.keys())

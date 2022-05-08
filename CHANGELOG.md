@@ -7,11 +7,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## Added
+## 5.1.4 2022-05-08
 
-- `Mentee` objects can specify a quality they'd like their `Mentor` to have, and `Mentor`s can specify a range of
-  qualities they have. This might be professional skills, like 'software development' or 'cattle wrangling'.
-  Alternatively, if you are targeting under-represented groups, this might be a gender, sexual, or racial identity.
+### Added
+
+- The `Person` base class now has a method `to_dict_for_export`. This could be useful if users want a different
+  representation for exporting - for example, if they don't need every attribute on the model, or they want to do
+  some calculations before exporting. By default, it just calls `to_dict_for_output`. In a future major version,
+  this method will be renamed simply to `to_dict`, to reflect that it's a full representation of the model.
 
 ## 5.1.0 2022-04-15
 
