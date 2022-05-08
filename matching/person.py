@@ -1,4 +1,6 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, TypeVar
+
+PersonType = TypeVar("PersonType", bound="Person")
 
 
 class Person:
@@ -19,11 +21,11 @@ class Person:
         self.has_no_match: bool = False
 
     @property
-    def connections(self) -> List["Person"]:
+    def connections(self) -> List[PersonType]:
         return self._connections
 
     @connections.setter
-    def connections(self, new_connection: "Person"):
+    def connections(self, new_connection: PersonType):
         if len(self._connections) < 3:
             self._connections.append(new_connection)
         else:
@@ -62,5 +64,5 @@ class Person:
     def class_name(self):
         return self.__class__.__name__.lower()
 
-    def __eq__(self, other: "Person"):
+    def __eq__(self, other: PersonType):
         return self.email == other.email
