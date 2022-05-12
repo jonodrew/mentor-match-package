@@ -67,7 +67,7 @@ class Match:
         """
         while not self.disallowed and self.rules:
             rule = self.rules.pop()
-            self.score += rule.apply(self)
+            self._score += rule.apply(self)
         return self
 
     def mark_successful(self):
@@ -76,3 +76,4 @@ class Match:
             self.mentee.mentors.append(self.mentor)
         else:
             logging.debug("Skipping this match as disallowed")
+        self._score = 0

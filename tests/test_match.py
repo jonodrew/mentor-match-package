@@ -83,3 +83,17 @@ class TestMatch:
         )
         test_match.calculate_match()
         assert test_match.disallowed
+
+    def test_match_score_doesnt_overcount(self, base_mentee, base_mentor):
+        test_match = TestMatch.new_match(
+            mentor=base_mentor, mentee=base_mentee, rules=[]
+        )
+        test_match.score = 2
+        test_match.rules = [
+            rl.Generic(
+                {True: 2, False: 0},
+                lambda match: match.mentee.organisation != match.mentor.organisation,
+            )
+        ]
+        test_match.calculate_match()
+        assert test_match.score == 4
