@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Dict, Union, List
+from typing import TYPE_CHECKING
+
 from matching.person import Person
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ class Mentee(Person):
     def mentors(self, new_mentor: "Mentor"):
         super(Mentee, self).connections.append(new_mentor)
 
-    def core_to_dict(self) -> Dict[str, Dict[str, Union[str, List]]]:
+    def core_to_dict(self):
         core = super(Mentee, self).core_to_dict()
         core[self.class_name()]["target profession"] = self.target_profession
         return core

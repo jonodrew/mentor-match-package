@@ -1,14 +1,15 @@
+import csv
+import math
+
 import pytest as pytest
 
 from matching.mentee import Mentee
 from matching.mentor import Mentor
 from matching.process import create_participant_list_from_path
-import math
-import csv
 
 
 @pytest.fixture
-def known_file(base_data):
+def known_file():
     def _known_file(path_to_file, role_type: str, quantity=50):
         padding_size = int(math.log10(quantity)) + 1
         data_path = path_to_file / f"{role_type}s.csv"
@@ -32,7 +33,7 @@ def known_file(base_data):
                         f"{role_type}.{str(i).zfill(padding_size)}@gov.uk",
                         "Some role",
                         f"Department of {role_type.capitalize()}s",
-                        2 if role_type == "mentor" else 0,
+                        "2" if role_type == "mentor" else "0",
                         "Policy",
                         "Policy",
                     ]

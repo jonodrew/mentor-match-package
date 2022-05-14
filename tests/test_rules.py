@@ -1,14 +1,15 @@
 import operator
 from unittest.mock import Mock
 
-from matching.rules import rule as rl
-from matching.match import Match
 import pytest
+
+from matching.match import Match
+from matching.rules import rule as rl
 
 
 @pytest.fixture(scope="function")
 def test_match(base_mentor, base_mentee):
-    return Match(base_mentor, base_mentee, weightings={}, rules=[])
+    return Match(base_mentor, base_mentee, rules=[])
 
 
 class TestRules:

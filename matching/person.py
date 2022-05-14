@@ -1,6 +1,7 @@
-from typing import List, Dict, Union, TypeVar
+from typing import List, Dict, Union
 
-PersonType = TypeVar("PersonType", bound="Person")
+CorePersonDict = Dict[str, Dict[str, Union[str, int]]]
+PersonDict = Dict[str, Dict[str, Union[str, int, list[CorePersonDict]]]]
 
 
 class Person:
@@ -21,11 +22,11 @@ class Person:
         self.has_no_match: bool = False
 
     @property
-    def connections(self) -> List[PersonType]:
+    def connections(self) -> List["Person"]:
         return self._connections
 
     @connections.setter
-    def connections(self, new_connection: PersonType):
+    def connections(self, new_connection: "Person"):
         if len(self._connections) < 3:
             self._connections.append(new_connection)
         else:
@@ -33,14 +34,19 @@ class Person:
 
     def to_dict(
         self,
-    ) -> Dict[str, Dict[str, Union[str, List[Dict[str, Dict[str, str]]]]]]:
-        output = self.core_to_dict()
-        output[self.class_name()]["connections"] = [
+    ) -> PersonDict:
+        connections_list = [
             connection.core_to_dict() for connection in self.connections
         ]
+        output: PersonDict = {
+            self.class_name(): {
+                "connections": connections_list,
+                **self.core_to_dict()[self.class_name()],
+            }
+        }
         return output
 
-    def core_to_dict(self) -> Dict[str, Dict[str, Union[str, List]]]:
+    def core_to_dict(self) -> CorePersonDict:
         return {
             self.class_name(): {
                 "email": self.email,
@@ -72,5 +78,7 @@ class Person:
     def class_name(self):
         return self.__class__.__name__.lower()
 
-    def __eq__(self, other: PersonType):
+    def __eq__(self, other: object):
+        if not isinstance(other, Person):
+            raise NotImplementedError
         return self.email == other.email

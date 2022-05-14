@@ -1,6 +1,7 @@
 import csv
 import logging
 
+import matching.rules.rule as rl
 from matching.mentor import Mentor
 from matching.process import (
     create_participant_list_from_path,
@@ -13,6 +14,14 @@ from matching.process import (
 
 
 class TestProcess:
+    default_rules = [
+        rl.Generic(
+            {True: 3, False: 0},
+            lambda match: match.mentee.organisation != match.mentor.organisation,
+        ),
+        rl.UnmatchedBonus(5),
+    ]
+
     def test_create_mentee_list(self, known_file, test_data_path):
         known_file(test_data_path, "mentee", 50)
         mentees = create_participant_list_from_path(Mentee, test_data_path)
@@ -26,7 +35,7 @@ class TestProcess:
             generate_match_matrix(
                 create_participant_list_from_path(Mentor, test_data_path),
                 create_participant_list_from_path(Mentee, test_data_path),
-                {"profession": 4, "grade": 3, "unmatched bonus": 0},
+                self.default_rules,
             )
         )
         assert len(matches) == 50
@@ -37,11 +46,7 @@ class TestProcess:
         known_file(test_data_path, "mentor", 50)
         mentors, mentees = conduct_matching_from_file(
             test_data_path,
-            [
-                {"profession": 4, "grade": 3, "unmatched bonus": 0},
-                {"profession": 4, "grade": 3, "unmatched bonus": 50},
-                {"profession": 0, "grade": 3, "unmatched bonus": 100},
-            ],
+            [self.default_rules],
         )
         assert len(mentors) == 50
         assert len(mentees) == 50
@@ -55,11 +60,7 @@ class TestProcess:
         known_file(test_data_path, "mentor", 35)
         mentors, mentees = conduct_matching_from_file(
             test_data_path,
-            [
-                {"profession": 4, "grade": 3, "unmatched bonus": 0},
-                {"profession": 4, "grade": 3, "unmatched bonus": 50},
-                {"profession": 0, "grade": 3, "unmatched bonus": 100},
-            ],
+            [self.default_rules, self.default_rules, self.default_rules],
         )
         every_mentee_has_a_mentor = list(
             map(lambda mentee: len(mentee.mentors) > 0, mentees)

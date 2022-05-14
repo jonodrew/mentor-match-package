@@ -1,31 +1,24 @@
 import csv
 import functools
-import operator
 import os
 import pathlib
 import sys
 from pathlib import Path
-from typing import Union, Type, List, Dict, Tuple, Generator, Optional, Callable
+from typing import Union, Type, List, Dict, Tuple, Generator, Callable
 
 from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 
+import matching.rules.rule as rl
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
-import matching.rules.rule as rl
 
 
 def generate_match_matrix(
-    mentor_list: List[Mentor],
-    mentee_list: List[Mentee],
-    weightings: Dict[str, int],
-    rules: Optional[List[rl.Rule]] = None,
+    mentor_list: List[Mentor], mentee_list: List[Mentee], rules: List[rl.AbstractRule]
 ) -> List[List[Match]]:
     return [
-        [
-            Match(mentor, mentee, weightings, rules).calculate_match()
-            for mentee in mentee_list
-        ]
+        [Match(mentor, mentee, rules).calculate_match() for mentee in mentee_list]
         for mentor in mentor_list
     ]
 
@@ -40,8 +33,8 @@ def process_form(path_to_form) -> Generator[Dict[str, str], None, None]:
 def create_participant_list_from_path(
     participant: Union[Type[Mentee], Type[Mentor]],
     path_to_data: pathlib.Path,
-    mapping_func: Optional[
-        Callable[[dict[str, str], str], dict[str, str]]
+    mapping_func: Callable[
+        [dict[str, str], str], dict[str, str]
     ] = lambda row, name: row,
 ):
     path_to_data = path_to_data / f"{participant.__str__()}s.csv"
@@ -97,10 +90,7 @@ def match_and_assign_participants(
 
 
 def process_data(
-    mentors: List[Mentor],
-    mentees: List[Mentee],
-    weightings_list: List[Dict[str, int]],
-    all_rules: Optional[List[List[rl.Rule]]] = None,
+    mentors: List[Mentor], mentees: List[Mentee], all_rules: List[List[rl.AbstractRule]]
 ) -> Tuple[List[Mentor], List[Mentee]]:
     """
     This is the main entrypoint for this software. It lazily generates three matrices, which allows for them to be
@@ -108,37 +98,10 @@ def process_data(
     :param all_rules:
     :param mentors:
     :param mentees:
-    :param weightings_list:
     :return:
     """
-    if not all_rules:
-        base_rules: List[rl.AbstractRule] = [
-            rl.Disqualify(
-                lambda match: match.mentee.organisation == match.mentor.organisation
-            ),
-            rl.Disqualify(
-                rl.Grade(target_diff=2, logical_operator=operator.gt).evaluate
-            ),
-            rl.Disqualify(
-                rl.Grade(target_diff=0, logical_operator=operator.le).evaluate
-            ),
-        ]
-        all_rules = [base_rules for _ in range(len(weightings_list))]
-        for i, match_round in enumerate(weightings_list):
-            unique_rules = [
-                rl.Grade(1, operator.eq, {True: match_round.get("grade", 3), False: 0}),
-                rl.Grade(2, operator.eq, {True: match_round.get("grade", 6), False: 0}),
-                rl.Generic(
-                    {True: match_round.get("profession", 0), False: 0},
-                    lambda match: match.mentee.target_profession
-                    == match.mentor.current_profession,
-                ),
-                rl.UnmatchedBonus(match_round.get("unmatched bonus", 0)),
-            ]
-            all_rules[i].extend(unique_rules)
     matrices = map(
         functools.partial(generate_match_matrix, mentors, mentees),
-        weightings_list,
         all_rules,
     )
     for matrix in matrices:
@@ -147,11 +110,11 @@ def process_data(
 
 
 def conduct_matching_from_file(
-    path_to_data: Path, weightings_list: [List[Dict[str, int]]]
+    path_to_data: Path, rules: list[list[rl.AbstractRule]]
 ) -> Tuple[List[Mentor], List[Mentee]]:
     mentors = create_participant_list_from_path(Mentor, path_to_data)
     mentees = create_participant_list_from_path(Mentee, path_to_data)
-    return process_data(mentors, mentees, weightings_list)
+    return process_data(mentors, mentees, rules)
 
 
 def create_mailing_list(

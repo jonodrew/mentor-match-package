@@ -1,24 +1,20 @@
-import functools
 import operator
+
+import pytest
 
 import matching.rules.rule as rl
 from matching.match import Match
-from matching.mentor import Mentor
 from matching.mentee import Mentee
-import pytest
+from matching.mentor import Mentor
 
 
 class TestMatch:
-    new_match = functools.partial(
-        Match, weightings={"profession": 4, "grade": 3, "unmatched bonus": 0}
-    )
-
     @pytest.mark.integration
     def test_cant_match_with_same_department(
         self, base_mentee: Mentee, base_mentor: Mentor
     ):
         base_mentee.organisation = base_mentor.organisation = "Department of Fun"
-        match = TestMatch.new_match(
+        match = Match(
             mentor=base_mentor,
             mentee=base_mentee,
             rules=[
@@ -42,7 +38,7 @@ class TestMatch:
         base_mentee.email = "mentee"
         base_mentor.email = "mentor"
 
-        match = TestMatch.new_match(
+        match = Match(
             mentor=base_mentor,
             mentee=base_mentee,
             rules=[
@@ -62,7 +58,7 @@ class TestMatch:
             assert not match.disallowed
 
     def test_mark_successful(self, base_mentee, base_mentor):
-        match = TestMatch.new_match(mentor=base_mentor, mentee=base_mentee, rules=[])
+        match = Match(mentor=base_mentor, mentee=base_mentee, rules=[])
         match.mark_successful()
         assert base_mentor in base_mentee.mentors
         assert base_mentee in base_mentor.mentees
@@ -70,7 +66,7 @@ class TestMatch:
     def test_cant_match_with_self(self, base_mentee, base_data):
         mentor = Mentor(**base_data)
         mentor.email = base_mentee.email = "same@email.com"
-        match = TestMatch.new_match(mentor=mentor, mentee=base_mentee, rules=[])
+        match = Match(mentor=mentor, mentee=base_mentee, rules=[])
         match.calculate_match()
         assert match.disallowed
 
@@ -78,16 +74,12 @@ class TestMatch:
         self, base_mentee, base_mentor
     ):
         base_mentor.mentees.append(base_mentee)
-        test_match = TestMatch.new_match(
-            mentor=base_mentor, mentee=base_mentee, rules=[]
-        )
+        test_match = Match(mentor=base_mentor, mentee=base_mentee, rules=[])
         test_match.calculate_match()
         assert test_match.disallowed
 
     def test_match_score_doesnt_overcount(self, base_mentee, base_mentor):
-        test_match = TestMatch.new_match(
-            mentor=base_mentor, mentee=base_mentee, rules=[]
-        )
+        test_match = Match(mentor=base_mentor, mentee=base_mentee, rules=[])
         test_match.score = 2
         test_match.rules = [
             rl.Generic(
