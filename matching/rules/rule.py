@@ -93,6 +93,5 @@ class Disqualify(Generic):
         super(Disqualify, self).__init__(None, disqualifying_condition)
 
     def apply(self, match_object: "Match") -> int:
-        if super(Disqualify, self).evaluate(match_object):
-            match_object.disallowed = True
+        match_object.disallowed = self.evaluate(match_object)
         return 0
