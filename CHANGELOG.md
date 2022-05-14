@@ -7,6 +7,22 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## 6.1.x
+
+### Changed
+
+- "target profession" and "current profession" have been reverted to "profession" on the Mentee and Mentor object
+  respectively. You are welcome to override these in your subclasses, but it's too confusing to have different
+  values on the base model
+
+###
+
+## 6.0.0 2022-05-14
+
+### Removed
+
+- Weightings have been removed. All weightings must be tied to `Rule` objects.
+
 ## 5.1.4 2022-05-08
 
 ### Added
