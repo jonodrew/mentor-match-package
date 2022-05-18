@@ -12,6 +12,7 @@ import matching.rules.rule as rl
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
+from matching.export import ExportToSpreadsheet
 
 
 def generate_match_matrix(
@@ -120,25 +121,4 @@ def conduct_matching_from_file(
 def create_mailing_list(
     participant_list: List[Union[Mentor, Mentee]], output_folder: Path
 ):
-    """
-    This function takes a list of either matched mentors or matched mentees. For each participant, it outputs their
-    data and the information of the participants they've been matched with. If a participant doesn't have the full
-    complement of three matches, the empty spaces are ignored.
-    """
-    file_name = f"{type(participant_list[0]).__str__()}s-list.csv"
-    file = output_folder.joinpath(file_name)
-    list_participants_as_dicts = [
-        participant.to_dict_for_export() for participant in participant_list
-    ]
-    field_headings = max(
-        list_participants_as_dicts, key=lambda participant: len(participant.keys())
-    ).keys()
-    try:
-        os.mkdir(output_folder)
-    except FileExistsError:
-        pass
-    with open(file, "w", newline="") as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=list(field_headings))
-        writer.writeheader()
-        for participant in list_participants_as_dicts:
-            writer.writerow(participant)
+    ExportToSpreadsheet(participant_list, output_folder).export()
