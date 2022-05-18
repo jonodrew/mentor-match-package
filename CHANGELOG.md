@@ -7,15 +7,24 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## 6.1.x
+## 7.0.0
 
 ### Changed
 
 - "target profession" and "current profession" have been reverted to "profession" on the Mentee and Mentor object
   respectively. You are welcome to override these in your subclasses, but it's too confusing to have different
   values on the base model
+- the participant.csv file has been changed
 
-###
+### Added
+
+## 6.1.0 2022-05-18
+
+### Added
+
+- there's now two new classes for exporting data. If you're using this library, you can either just use the
+`ExportToSpreadsheet` class to...well...export to a spreadsheet. Alternatively, if you're using email to contact
+successful matches, why not subclass `ExportToEmail` and pass it your favourite email client?
 
 ## 6.0.0 2022-05-14
 

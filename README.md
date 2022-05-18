@@ -70,3 +70,10 @@ if they've already been matched once.
 `Generic`, like `Disqualify`, takes a function with the signature `[[Match], bool]`. It also takes a dictionary,
 like `Grade`, where you define what score to be given to the `Match` if the function evaluates to true, or indeed if
 it evaluates to false!
+
+## Export
+
+There's an inbuilt `ExportToSpreadsheet` which very much does what it says on the tin. Instantiate it with a list of
+`Person` objects and where you want the output to end up and call `export` to do the thing.
+
+You can also subclass `ExportToEmail` for all your email-exporting needs. Or write your own thing entirely!
