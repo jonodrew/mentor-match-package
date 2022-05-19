@@ -18,6 +18,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+## [6.2.0] - 2022-05-14
+
+### Changed
+
+- There is a `PendingDeprecationWarning` on the changes marked above, which are mooted for version 7. Please
+  consider now what will happen when you can't pass "current profession" and "target profession" to the classes.
+  There are a couple of approaches you could consider:
+  - Subclassing the class you want and adding another attribute, accessible from kwargs. You'll also want to
+    override the `core_to_dict` methods
+  - Subclassing the class and adding a `property` that describes the `profession` attribute the way you think it
+    should be described. This way you can keep using the normal template and do the transformation in code.
+
 ## 6.1.0 2022-05-18
 
 ### Added
