@@ -67,7 +67,7 @@ def base_data() -> dict:
         "role": "N/A",
         "organisation": "Department of Fun",
         "grade": 5,
-        "current profession": "Policy",
+        "profession": "Policy",
     }
 
 

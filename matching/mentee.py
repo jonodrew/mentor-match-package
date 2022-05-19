@@ -1,3 +1,4 @@
+import warnings
 from typing import TYPE_CHECKING
 
 from matching.person import Person
@@ -13,9 +14,16 @@ class Mentee(Person):
         they're in at the moment
         :param kwargs:
         """
-        self.target_profession = kwargs.get(
-            "target profession", kwargs.get("current profession")
-        )
+        if (profession := kwargs.get("target profession")) is not None:
+            warnings.warn(
+                "In version 7, 'target profession' will be deprecated in favour of"
+                " 'profession'. If you need to keep using 'target profession', please"
+                " subclass Mentee",
+                PendingDeprecationWarning,
+            )
+            self.target_profession = profession
+        else:
+            self.profession = self.target_profession = kwargs.get("profession", "")
         super(Mentee, self).__init__(**kwargs)
 
     @property

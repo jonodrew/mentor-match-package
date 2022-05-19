@@ -49,3 +49,12 @@ class TestPerson:
         person_as_dict = json.loads(person_as_json)
         recreated_person = ParticipantFactory.create_from_dict(person_as_dict)
         assert recreated_person == test_person
+
+    @pytest.mark.parametrize(
+        ["match_class", "attribute"],
+        [(Person, "current profession"), (Mentee, "target profession")],
+    )
+    def test_deprecation_warnings(self, match_class, attribute, base_data):
+        with pytest.deprecated_call():
+            base_data[attribute] = "error"
+            match_class(**base_data)

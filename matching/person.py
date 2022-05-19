@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Dict, Union
 
 CorePersonDict = Dict[str, Dict[str, Union[str, int]]]
@@ -13,7 +14,16 @@ class Person:
         """
         self.grade: int = int(kwargs.get("grade"))
         self.organisation: str = kwargs.get("organisation", None)
-        self.current_profession: str = kwargs.get("current profession", None)
+        if (profession := kwargs.get("current profession")) is not None:
+            warnings.warn(
+                "In version 7, 'current profession' will be deprecated in favour of"
+                " 'profession'. If you need to keep using 'current profession', please"
+                " subclass Person",
+                PendingDeprecationWarning,
+            )
+            self.current_profession = self.profession = profession
+        else:
+            self.profession = self.current_profession = kwargs.get("profession", "")
         self.email = kwargs.get("email", None)
         self.first_name = kwargs.get("first name", None)
         self.last_name = kwargs.get("last name", None)
@@ -55,6 +65,7 @@ class Person:
                 "role": self.role,
                 "organisation": self.organisation,
                 "grade": self.grade,
+                "profession": self.profession,
                 "current profession": self.current_profession,
             }
         }
