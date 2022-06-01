@@ -78,6 +78,6 @@ class TestRules:
 
     def test_rule_is_deserializable(self):
         """
-        This tests that a rule can be reconstituted from JSON, with the `RuleFactory`
+        This tests that a rule-as-dict can be reconstituted from JSON, with the `RuleFactory`
         """
         assert False
