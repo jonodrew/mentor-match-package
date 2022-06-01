@@ -18,6 +18,4 @@ class ParticipantFactory:
         participant._connections = [
             cls.create_from_dict(connection_data) for connection_data in connections
         ]
-        if type(participant) is Mentee:
-            participant.target_profession = participant_data["target profession"]
         return participant
