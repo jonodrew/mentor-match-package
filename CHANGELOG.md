@@ -16,7 +16,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   values on the base model
 - the participant.csv file has been changed
 
+## [6.3.0]
+
 ### Added
+
+- all `Rule` objects now must have a `.to_json` method
+- a `RuleFactory` class has been created, with a `.from_json` method
 
 ## [6.2.0] - 2022-05-14
 

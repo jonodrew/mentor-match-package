@@ -66,3 +66,18 @@ class TestRules:
             assert score == 4
         else:
             assert score == 0
+
+    def test_rule_is_serializable(self):
+        """
+        This tests if a `Rule` can be serialized to JSON
+        """
+        assert False
+
+    def test_rule_raises_error_without_to_json_method(self):
+        assert False
+
+    def test_rule_is_deserializable(self):
+        """
+        This tests that a rule can be reconstituted from JSON, with the `RuleFactory`
+        """
+        assert False
