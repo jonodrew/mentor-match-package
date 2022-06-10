@@ -1,18 +1,26 @@
 import operator
-from abc import ABC, abstractmethod
-from typing import Callable, Dict, TYPE_CHECKING, Union
+from abc import abstractmethod
+from typing import Callable, Dict, TYPE_CHECKING, Union, Protocol
 
 if TYPE_CHECKING:
     from matching.match import Match
 
 
-class AbstractRule(ABC):
-    @abstractmethod
+class Rule(Protocol):
     def apply(self, match_object: "Match") -> int:
-        raise NotImplementedError
+        """
+        Applies the rule to the ``match`` object
+        """
+        ...
+
+    def evaluate(self, match_object: "Match") -> bool:
+        """
+        Evaluates the match object, returning a boolean
+        """
+        ...
 
 
-class Rule(AbstractRule):
+class BaseRule:
     def __init__(self, score_dict: Union[Dict[bool, int], None] = None):
         if score_dict is None:
             score_dict = {True: 0, False: 0}
@@ -22,11 +30,11 @@ class Rule(AbstractRule):
         return self.results.get(self.evaluate(match_object), False)
 
     @abstractmethod
-    def evaluate(self, match_object: "Match") -> bool:
+    def evaluate(self, match_object: "Match"):
         raise NotImplementedError
 
 
-class UnmatchedBonus(Rule):
+class UnmatchedBonus(BaseRule):
     def __init__(self, unmatched_bonus: int):
         super(UnmatchedBonus, self).__init__({True: unmatched_bonus, False: 0})
 
@@ -39,7 +47,7 @@ class UnmatchedBonus(Rule):
         )
 
 
-class Grade(Rule):
+class Grade(BaseRule):
     def __init__(
         self,
         target_diff: int,
@@ -56,7 +64,7 @@ class Grade(Rule):
         )
 
 
-class Equivalent(Rule):
+class Equivalent(BaseRule):
     def __init__(self, attribute: str, score_dict: Union[Dict[bool, int], None] = None):
         super(Equivalent, self).__init__(score_dict)
         self.attribute = attribute
@@ -70,7 +78,7 @@ class Equivalent(Rule):
         return operator.eq(*attrs)
 
 
-class Generic(Rule):
+class Generic(BaseRule):
     def __init__(
         self,
         score_dict: Union[Dict[bool, int], None],

@@ -18,14 +18,12 @@ class Match:
     matched
     """
 
-    def __init__(
-        self, mentor: "Mentor", mentee: "Mentee", rules: List[rl.AbstractRule]
-    ):
+    def __init__(self, mentor: "Mentor", mentee: "Mentee", rules: List[rl.Rule]):
         self.mentee = mentee
         self.mentor = mentor
         self._disallowed: bool = False
         self._score: int = 0
-        self.rules: list[rl.AbstractRule] = [
+        self.rules: list[rl.Rule] = [
             rl.Disqualify(lambda match: match.mentor == match.mentee),
             rl.Disqualify(
                 lambda match: match.mentor in match.mentee.mentors
