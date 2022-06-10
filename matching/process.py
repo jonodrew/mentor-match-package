@@ -1,6 +1,6 @@
 import csv
+
 import functools
-import os
 import pathlib
 import sys
 from pathlib import Path
@@ -12,11 +12,12 @@ import matching.rules.rule as rl
 from matching.match import Match
 from matching.mentee import Mentee
 from matching.mentor import Mentor
+from matching.person import Person
 from matching.export import ExportToSpreadsheet
 
 
 def generate_match_matrix(
-    mentor_list: List[Mentor], mentee_list: List[Mentee], rules: List[rl.AbstractRule]
+    mentor_list: List[Mentor], mentee_list: List[Mentee], rules: List[rl.RuleProtocol]
 ) -> List[List[Match]]:
     return [
         [Match(mentor, mentee, rules).calculate_match() for mentee in mentee_list]
@@ -91,7 +92,7 @@ def match_and_assign_participants(
 
 
 def process_data(
-    mentors: List[Mentor], mentees: List[Mentee], all_rules: List[List[rl.AbstractRule]]
+    mentors: List[Mentor], mentees: List[Mentee], all_rules: List[List[rl.RuleProtocol]]
 ) -> Tuple[List[Mentor], List[Mentee]]:
     """
     This is the main entrypoint for this software. It lazily generates three matrices, which allows for them to be
@@ -111,14 +112,12 @@ def process_data(
 
 
 def conduct_matching_from_file(
-    path_to_data: Path, rules: list[list[rl.AbstractRule]]
+    path_to_data: Path, rules: list[list[rl.RuleProtocol]]
 ) -> Tuple[List[Mentor], List[Mentee]]:
     mentors = create_participant_list_from_path(Mentor, path_to_data)
     mentees = create_participant_list_from_path(Mentee, path_to_data)
     return process_data(mentors, mentees, rules)
 
 
-def create_mailing_list(
-    participant_list: List[Union[Mentor, Mentee]], output_folder: Path
-):
+def create_mailing_list(participant_list: List[Person], output_folder: Path):
     ExportToSpreadsheet(participant_list, output_folder).export()

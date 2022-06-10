@@ -1,18 +1,26 @@
 import operator
-from abc import ABC, abstractmethod
-from typing import Callable, Dict, TYPE_CHECKING, Union
+from abc import abstractmethod
+from typing import Callable, Dict, TYPE_CHECKING, Union, Protocol
 
 if TYPE_CHECKING:
     from matching.match import Match
 
 
-class AbstractRule(ABC):
-    @abstractmethod
+class RuleProtocol(Protocol):
     def apply(self, match_object: "Match") -> int:
-        raise NotImplementedError
+        """
+        Applies the rule to the ``match`` object
+        """
+        ...
+
+    def evaluate(self, match_object: "Match") -> bool:
+        """
+        Evaluates the match object, returning a boolean
+        """
+        ...
 
 
-class Rule(AbstractRule):
+class Rule:
     def __init__(self, score_dict: Union[Dict[bool, int], None] = None):
         if score_dict is None:
             score_dict = {True: 0, False: 0}
@@ -22,7 +30,7 @@ class Rule(AbstractRule):
         return self.results.get(self.evaluate(match_object), False)
 
     @abstractmethod
-    def evaluate(self, match_object: "Match") -> bool:
+    def evaluate(self, match_object: "Match"):
         raise NotImplementedError
 
 
