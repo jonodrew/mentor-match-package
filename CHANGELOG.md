@@ -18,6 +18,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+## [6.3.0] - 2022-06-10
+
+### Changed
+
+- there's now a `RuleProtocol` interface, which describes what a `Rule` should look like
+
 ## [6.2.0] - 2022-05-14
 
 ### Changed
