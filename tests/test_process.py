@@ -1,5 +1,6 @@
 import csv
 import logging
+from unittest.mock import patch
 
 import matching.rules.rule as rl
 from matching.mentor import Mentor
@@ -10,6 +11,7 @@ from matching.process import (
     conduct_matching_from_file,
     create_mailing_list,
     generate_match_matrix,
+    process_with_minimum_matching,
 )
 
 
@@ -93,3 +95,30 @@ class TestProcess:
             assert {"match 1 email", "match 2 email", "match 3 email"}.issubset(
                 set(next(file_reader))
             )
+
+
+class TestProcessWithMinimumMatching:
+    def test_doesnt_run_forever(self, test_participants):
+        """
+        This tests that, when the percentage remains stubbornly low, the system will fail gracefully
+        """
+        mentors, mentees = test_participants()
+        with patch(
+            "matching.process.calculate_percentage_mentees_matched", return_value=0.0
+        ):
+            output = process_with_minimum_matching(
+                1.0,
+                mentors,
+                mentees,
+                [
+                    [
+                        rl.Generic(
+                            {True: 3, False: 0},
+                            lambda match: match.mentee.profession
+                            == match.mentor.profession,
+                        )
+                    ]
+                    for _ in range(3)
+                ],
+            )
+            assert output == (mentors, mentees)

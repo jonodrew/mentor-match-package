@@ -1,8 +1,10 @@
+import collections
 import csv
 
 import functools
 import pathlib
 import sys
+import copy
 from pathlib import Path
 from typing import Union, Type, List, Dict, Tuple, Generator, Callable
 
@@ -85,8 +87,10 @@ def calculate_matches(prepared_matrix: Matrix):
 def match_and_assign_participants(
     good_matches: List[List[Match]],
 ) -> List[List[Match]]:
-    for successful_match in calculate_matches(prepare_matrix(good_matches)):
-        match = good_matches[successful_match[0]][successful_match[1]]
+    for successful_match_y, successful_match_x in calculate_matches(
+        prepare_matrix(good_matches)
+    ):
+        match = good_matches[successful_match_y][successful_match_x]
         match.mark_successful()
     return good_matches
 
@@ -109,6 +113,36 @@ def process_data(
     for matrix in matrices:
         match_and_assign_participants(matrix)
     return mentors, mentees
+
+
+def process_with_minimum_matching(
+    acceptable_percentage: float,
+    mentors: List[Mentor],
+    mentees: List[Mentee],
+    all_rules: List[List[rl.Rule]],
+):
+    current_percentage = 0.0
+    unmatched_bonus = 0
+    options = []
+    Outcome = collections.namedtuple("Outcome", ["participants", "percentage"])
+    while current_percentage <= acceptable_percentage and unmatched_bonus < sum(
+        [rule.results.get(True) for rule in all_rules[0]]
+    ):
+        copy_mentors = mentors.copy()
+        copy_mentees = mentees.copy()
+        all_rules_copy = copy.deepcopy(all_rules)
+        for rule_list in all_rules_copy:
+            rule_list.append(rl.UnmatchedBonus(unmatched_bonus))
+        this_round_pairs = process_data(copy_mentors, copy_mentees, all_rules_copy)
+        current_percentage = calculate_percentage_mentees_matched(this_round_pairs[1])
+        options.append(Outcome(this_round_pairs, current_percentage))
+        unmatched_bonus += 1
+    options.sort(key=lambda outcome: outcome.percentage)
+    return options[0].participants
+
+
+def calculate_percentage_mentees_matched(mentees: list[Mentee]):
+    return len([mentee for mentee in mentees if len(mentee.mentors) > 0]) / len(mentees)
 
 
 def conduct_matching_from_file(

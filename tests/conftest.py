@@ -1,4 +1,6 @@
 import csv
+from typing import Callable
+
 import math
 
 import pytest as pytest
@@ -50,12 +52,17 @@ def test_data_path(tmpdir_factory):
 
 
 @pytest.fixture
-def test_participants(test_data_path, known_file):
-    known_file(test_data_path, "mentee", 50)
-    known_file(test_data_path, "mentor", 50)
-    create_participant_list_from_path(Mentee, test_data_path)
-    create_participant_list_from_path(Mentor, test_data_path)
-    yield
+def test_participants(
+    test_data_path, known_file
+) -> Callable[[], tuple[list[Mentor], list[Mentee]]]:
+    def _test_participants() -> tuple[list[Mentor], list[Mentee]]:
+        known_file(test_data_path, "mentee", 50)
+        known_file(test_data_path, "mentor", 50)
+        return create_participant_list_from_path(
+            Mentor, test_data_path
+        ), create_participant_list_from_path(Mentee, test_data_path)
+
+    return _test_participants
 
 
 @pytest.fixture
