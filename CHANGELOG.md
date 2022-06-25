@@ -7,14 +7,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## 7.0.0
+## [7.0.0] - 2022-06-25
 
 ### Changed
 
 - "target profession" and "current profession" have been reverted to "profession" on the Mentee and Mentor object
   respectively. You are welcome to override these in your subclasses, but it's too confusing to have different
   values on the base model
-- the participant.csv file has been changed
+- all supporting code, including tests, has been updated to recognise this
 
 ### Added
 
