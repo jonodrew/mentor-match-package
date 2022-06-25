@@ -16,8 +16,7 @@ class TestRules:
     def test_matching_scores_scores_correct_points(self, test_match):
         profession_rule = rl.Generic(
             {True: 4, False: 0},
-            lambda match: match.mentee.target_profession
-            == match.mentor.current_profession,
+            lambda match: match.mentee.profession == match.mentor.profession,
         )
         assert profession_rule.apply(test_match) == 4
 

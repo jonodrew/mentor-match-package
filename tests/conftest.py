@@ -21,8 +21,6 @@ def known_file():
                 "role",
                 "organisation",
                 "grade",
-                "current profession",
-                "target profession",
             ]
             data = [headings]
             for i in range(quantity):
@@ -34,8 +32,6 @@ def known_file():
                         "Some role",
                         f"Department of {role_type.capitalize()}s",
                         "2" if role_type == "mentor" else "0",
-                        "Policy",
-                        "Policy",
                     ]
                 )
             file_writer = csv.writer(test_data)
@@ -74,7 +70,7 @@ def base_data() -> dict:
 @pytest.fixture
 def base_mentee(base_data):
     mentee = Mentee(**base_data)
-    mentee.target_profession = "Policy"
+    mentee.profession = "Policy"
     return mentee
 
 

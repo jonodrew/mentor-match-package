@@ -14,16 +14,12 @@ class Person:
         """
         self.grade: int = int(kwargs.get("grade"))
         self.organisation: str = kwargs.get("organisation", None)
-        if (profession := kwargs.get("current profession")) is not None:
+        self.profession = kwargs.get("profession", None)
+        if kwargs.get("current_profession") or kwargs.get("current profession"):
             warnings.warn(
-                "In version 7, 'current profession' will be deprecated in favour of"
-                " 'profession'. If you need to keep using 'current profession', please"
-                " subclass Person",
-                PendingDeprecationWarning,
+                "`current_profession` is deprecated. Use `profession` instead",
+                DeprecationWarning,
             )
-            self.current_profession = self.profession = profession
-        else:
-            self.profession = self.current_profession = kwargs.get("profession", "")
         self.email = kwargs.get("email", None)
         self.first_name = kwargs.get("first name", None)
         self.last_name = kwargs.get("last name", None)
@@ -66,7 +62,6 @@ class Person:
                 "organisation": self.organisation,
                 "grade": self.grade,
                 "profession": self.profession,
-                "current profession": self.current_profession,
             }
         }
 
