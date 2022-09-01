@@ -4,7 +4,7 @@ import functools
 import pathlib
 import sys
 from pathlib import Path
-from typing import Union, Type, List, Dict, Tuple, Generator, Callable
+from typing import Union, Type, List, Dict, Tuple, Generator, Callable, TypeVar
 
 from munkres import Munkres, make_cost_matrix, Matrix  # type: ignore
 
@@ -16,8 +16,14 @@ from matching.person import Person
 from matching.export import ExportToSpreadsheet
 
 
+MenteeType = TypeVar("MenteeType", bound=Mentee)
+MentorType = TypeVar("MentorType", bound=Mentor)
+
+
 def generate_match_matrix(
-    mentor_list: List[Mentor], mentee_list: List[Mentee], rules: List[rl.RuleProtocol]
+    mentor_list: List[MentorType],
+    mentee_list: List[MenteeType],
+    rules: List[rl.RuleProtocol],
 ) -> List[List[Match]]:
     return [
         [Match(mentor, mentee, rules).calculate_match() for mentee in mentee_list]
@@ -92,8 +98,10 @@ def match_and_assign_participants(
 
 
 def process_data(
-    mentors: List[Mentor], mentees: List[Mentee], all_rules: List[List[rl.RuleProtocol]]
-) -> Tuple[List[Mentor], List[Mentee]]:
+    mentors: List[MentorType],
+    mentees: List[MenteeType],
+    all_rules: List[List[rl.RuleProtocol]],
+) -> Tuple[List[MentorType], List[MenteeType]]:
     """
     This is the main entrypoint for this software. It lazily generates three matrices, which allows for them to be
     mutated over the course of the matching process.
@@ -113,7 +121,7 @@ def process_data(
 
 def conduct_matching_from_file(
     path_to_data: Path, rules: list[list[rl.RuleProtocol]]
-) -> Tuple[List[Mentor], List[Mentee]]:
+) -> Tuple[List[MentorType], List[MenteeType]]:
     mentors = create_participant_list_from_path(Mentor, path_to_data)
     mentees = create_participant_list_from_path(Mentee, path_to_data)
     return process_data(mentors, mentees, rules)
