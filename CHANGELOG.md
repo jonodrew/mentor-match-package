@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [7.0.1] - 2022-09-01
+### Changed
+
+- `process_data` now returns a bound variable, because my IDE was getting annoyed with me. That's it. That's the
+  whole reason
+
 ## [7.0.0] - 2022-06-25
 
 ### Changed
@@ -14,7 +20,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - "target profession" and "current profession" have been reverted to "profession" on the Mentee and Mentor object
   respectively. You are welcome to override these in your subclasses, but it's too confusing to have different
   values on the base model
-- all supporting code, including tests, has been updated to recognise this
+- the participant.csv file has been changed
 
 ### Added
 
